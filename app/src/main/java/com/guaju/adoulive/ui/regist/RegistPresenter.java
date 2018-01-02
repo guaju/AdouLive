@@ -47,7 +47,7 @@ public class RegistPresenter implements RegistContract.Presenter {
 
             @Override
             public void onError(String module, int errCode, String errMsg) {
-               mView.registError();
+               mView.registError(errCode, errMsg);
             }
         });
 

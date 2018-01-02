@@ -7,7 +7,7 @@ package com.guaju.adoulive.ui.login;
 public interface LoginContract {
      interface  View{
         void loginSuccess();
-        void loginFailed();
+        void loginFailed(int errCode, String errMsg);
         void loginInfoEmpty();
         void loginInfoError();
      }

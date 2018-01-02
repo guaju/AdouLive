@@ -50,12 +50,14 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public void loginSuccess() {
         //登录成功
+        ToastUtils.show("登陆成功~~~");
     }
 
     @Override
-    public void loginFailed() {
-        //登录失败
+    public void loginFailed(int errCode, String errMsg) {
 
+        //登录失败
+        ToastUtils.show("登陆失败~"+errMsg+"错误码："+errCode);
     }
 
     @Override

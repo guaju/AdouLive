@@ -20,6 +20,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     private Button regist;
     private Toolbar toolbar;
 
+    RegistContract.Presenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +30,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         initListener();
         //初始化toolbar
         initToolbar();
+        initPresenter();
+    }
+
+    private void initPresenter() {
+        this.presenter=new RegistPresenter(this);
     }
 
     private void initToolbar() {
@@ -59,7 +66,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.bt_regist:
+                String acount = et_regist_acount.getText().toString().trim();
+                String pass = et_regist_pass.getText().toString().trim();
+                String confirmPass = et_regist_confirm.getText().toString().trim();
 
+                presenter.regist(acount,pass,confirmPass);
 
                 break;
             case R.id.tv_info:
@@ -71,12 +82,13 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void registSuccess() {
-
+        ToastUtils.show("注册成功！请您登陆~");
+        finish();
     }
 
     @Override
-    public void registError() {
-
+    public void registError(int errCode, String errMsg) {
+        ToastUtils.show("注册失败！"+errMsg+"错误码："+errCode);
     }
 
     @Override

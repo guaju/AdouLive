@@ -7,7 +7,7 @@ package com.guaju.adoulive.ui.regist;
 public interface RegistContract {
     interface View{
         void registSuccess();
-        void registError();
+        void registError(int errCode, String errMsg);
         //信息为空
         void registInfoEmpty();
         //位数不够

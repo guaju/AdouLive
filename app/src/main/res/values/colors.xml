@@ -7,4 +7,9 @@
     <color name="login_text">#E80E3C</color>
     <color name="regist_bule">#0e84e8</color>
     <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="little_gray">#449a9797</color>
+    <color name="edit_profile_name">#303030</color>
+    <color name="pink">#4f00</color>
+    <color name="little_green">#44348d34</color>
 </resources>

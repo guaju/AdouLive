@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <declare-styleable name="EditProfileItem">
+        <attr name="itemtitle" format="string|reference"></attr>
+        <attr name="itemtype">
+            <enum name="normal" value="101"/>
+            <enum name="avatar" value="102"/>
+        </attr>
+        <attr name="itemvalue" format="string|reference"></attr>
+        <attr name="isendline" format="boolean"></attr>
+    </declare-styleable>
+    
+</resources>

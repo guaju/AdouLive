@@ -26,6 +26,7 @@
         <EditText
             android:id="@+id/et_regist_acount"
             android:layout_marginLeft="30dp"
+
             android:lines="1"
             android:layout_width="200dp"
             android:layout_height="40dp"
@@ -53,6 +54,7 @@
         <EditText
             android:id="@+id/et_regist_pass"
             android:layout_marginLeft="30dp"
+            android:inputType="textPassword"
             android:lines="1"
             android:layout_width="200dp"
             android:layout_height="40dp"
@@ -81,6 +83,7 @@
             android:id="@+id/et_regist_confirm"
             android:layout_marginLeft="30dp"
             android:lines="1"
+            android:inputType="textPassword"
             android:layout_width="200dp"
             android:layout_height="40dp"
             android:background="@null"

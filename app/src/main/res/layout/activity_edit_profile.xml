@@ -1,9 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.guaju.adoulive.ui.profile.EditProfileActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtype="avatar"
+            app:itemtitle="头像"
+            />
+      
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_nickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtitle="昵称"
+            />
 
-</android.support.constraint.ConstraintLayout>
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_adouid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtitle="阿斗号"
+            />
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtitle="性别"
+            />
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_xingzuo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtitle="星座"
+            app:isendline="true"
+            />
+        <TextView
+            android:paddingLeft="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:text="个人信息"
+            android:background="@color/little_gray"
+            android:textColor="@color/gray"
+            android:textSize="14sp"
+            />
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_home_country"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtitle="家乡"
+            />
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_job"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtitle="职业"
+            />
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_active_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtitle="活跃地带"
+            />
+        <com.guaju.adoulive.widget.EditProfileItem
+            android:id="@+id/ep_signature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemtitle="个性签名"
+            app:isendline="true"
+            />
+        
+
+
+
+
+    </LinearLayout>
+
+
+
+</ScrollView>
