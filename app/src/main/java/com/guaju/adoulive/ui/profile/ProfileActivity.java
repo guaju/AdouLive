@@ -39,7 +39,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void initPresenter() {
         presenter=new ProfilePresenter(this);
-        presenter.getUserProfile();
     }
 
 
@@ -62,6 +61,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         tv_my_fans = findViewById(R.id.tv_my_fans);
         tv_my_fork = findViewById(R.id.tv_my_fork);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.getUserProfile();
     }
 
     @Override

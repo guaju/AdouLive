@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<LinearLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.guaju.adoulive.ui.profile.ProfileActivity">
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.widget.Toolbar
+        app:title="我"
+        app:titleTextColor="@color/white"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        />
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,6 +46,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="暂无昵称"
+                android:lines="1"
+                android:maxLength="6"
+                android:ellipsize="end"
                 android:textColor="#000"
                 android:textSize="24sp"
                 app:layout_constraintStart_toEndOf="@+id/iv_avatar"
@@ -166,3 +184,4 @@
     </LinearLayout>
 
 </ScrollView>
+</LinearLayout>

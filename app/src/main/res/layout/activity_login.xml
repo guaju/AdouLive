@@ -33,6 +33,7 @@
             android:layout_height="40dp"
             android:background="@null"
             android:hint="请输入用户名"
+            android:text="xiaoming"
             android:textSize="18sp"
             />
 
@@ -60,6 +61,8 @@
             android:layout_width="150dp"
             android:layout_height="40dp"
             android:background="@null"
+            android:text="12345678"
+            android:inputType="textPassword"
             android:hint="请输入密码"
             android:textSize="18sp"
             />

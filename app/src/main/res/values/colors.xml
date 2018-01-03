@@ -8,8 +8,12 @@
     <color name="regist_bule">#0e84e8</color>
     <color name="white">#fff</color>
     <color name="black">#000</color>
-    <color name="little_gray">#449a9797</color>
+    <color name="little_gray">#d6d3d3</color>
     <color name="edit_profile_name">#303030</color>
     <color name="pink">#4f00</color>
     <color name="little_green">#44348d34</color>
+    <color name="profile_green">#d4dad4</color>
+    <color name="confim_red">#e80e3c</color>
+    <color name="little_pink">#edd7d7</color>
+    <color name="deep_pink">#fc7878</color>
 </resources>

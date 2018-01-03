@@ -66,7 +66,11 @@ public class EditProfileItem extends FrameLayout {
         else if (itemtype==ItemType.TYPE_AVATAR.getValue()){
             setType(ItemType.TYPE_AVATAR);
         }
-
+        //是否可编辑
+        boolean value = typedArray.getBoolean(R.styleable.EditProfileItem_iseditable, true);
+        if (!value){
+            iv_right_arraw.setVisibility(View.INVISIBLE);
+        }
 
 
     }
@@ -116,6 +120,9 @@ public class EditProfileItem extends FrameLayout {
          public int getValue(){
              return value;
          }
+     }
+     public void setValue(String str){
+         tv_editprofile_value.setText(str);
      }
     
 }

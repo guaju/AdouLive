@@ -1,6 +1,5 @@
 package com.guaju.adoulive.ui.profile;
 
-import com.guaju.adoulive.app.AdouApplication;
 import com.guaju.adoulive.bean.AdouTimUserProfile;
 import com.guaju.adoulive.engine.TimProfileHelper;
 
@@ -19,16 +18,12 @@ public class ProfilePresenter implements ProfileContract.Presenter {
 
     @Override
     public void getUserProfile() {
-        AdouTimUserProfile adouTimUserProfile = AdouApplication.getApp().getAdouTimUserProfile();
-        if (adouTimUserProfile!=null){
-        view.updateProfile(adouTimUserProfile);
-        }else{
+
             new TimProfileHelper().getSelfProfile(activity, new TimProfileHelper.OnProfileGet() {
                 @Override
                 public void onGet(AdouTimUserProfile mProfile) {
                     view.updateProfile(mProfile);
                 }
-
                 @Override
                 public void noGet() {
                      //没有获取到
@@ -36,5 +31,4 @@ public class ProfilePresenter implements ProfileContract.Presenter {
                 }
             });
         }
-    }
 }

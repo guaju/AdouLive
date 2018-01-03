@@ -8,6 +8,7 @@
         </attr>
         <attr name="itemvalue" format="string|reference"></attr>
         <attr name="isendline" format="boolean"></attr>
+        <attr name="iseditable" format="boolean"></attr>
     </declare-styleable>
     
 </resources>
