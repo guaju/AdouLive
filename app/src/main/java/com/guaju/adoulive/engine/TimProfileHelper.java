@@ -72,7 +72,7 @@ public class TimProfileHelper {
 
         });
     }
-
+    //重置应用中保存的信息
     public void resetApplicationProfile(final OnProfileGet onProfileGet){
         TIMFriendshipManager.getInstance().getSelfProfile(new TIMValueCallBack<TIMUserProfile>() {
             @Override

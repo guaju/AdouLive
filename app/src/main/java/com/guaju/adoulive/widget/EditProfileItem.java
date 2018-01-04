@@ -2,6 +2,7 @@ package com.guaju.adoulive.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -15,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.guaju.adoulive.R;
+import com.guaju.adoulive.utils.ImageUtils;
 
 /**
  * Created by guaju on 2018/1/1.
@@ -108,6 +110,15 @@ public class EditProfileItem extends FrameLayout {
            iv_editprofile_avatar.setVisibility(View.INVISIBLE);
        }
 
+
+   }
+
+   public void setAvatar(String path){
+       ImageUtils.getInstance().loadCircle(path,iv_editprofile_avatar);
+
+   }
+   public void setAvatar(Uri path){
+       ImageUtils.getInstance().loadCircle(path,iv_editprofile_avatar);
 
    }
      public  enum ItemType{

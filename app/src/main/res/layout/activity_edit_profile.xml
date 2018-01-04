@@ -96,7 +96,17 @@
             app:isendline="true"
             />
         
-
+         <Button
+             android:layout_marginTop="50dp"
+             android:id="@+id/bt_save_profile"
+             android:gravity="center"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="@drawable/selector_save_profile"
+             android:text="保存"
+             android:textSize="24sp"
+             android:textColor="@color/white"
+             />
 
 
 

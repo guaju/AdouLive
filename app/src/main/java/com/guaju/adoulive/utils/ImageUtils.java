@@ -1,5 +1,6 @@
 package com.guaju.adoulive.utils;
 
+import android.net.Uri;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +20,14 @@ public class ImageUtils {
         Glide.with(AdouApplication.getApp())
                 .load(resid)
                 .apply(RequestOptions.circleCropTransform())
+                .into(iv);
+    }
+    public  void loadCircle(Uri resid, ImageView iv) {
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.circleCrop();
+        Glide.with(AdouApplication.getApp())
+                .load(resid)
+                .apply(requestOptions)
                 .into(iv);
     }
 

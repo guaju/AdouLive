@@ -9,6 +9,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -89,6 +90,12 @@ public class EditProfileDialog implements View.OnClickListener {
         bt_confim.setOnClickListener(this);
         builder.setView(v);
         dialog=builder.create();
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams attributes = window.getAttributes();
+        attributes.width=WindowManager.LayoutParams.MATCH_PARENT;
+        attributes.height=WindowManager.LayoutParams.WRAP_CONTENT;
+//        attributes.gravity= Gravity.BOTTOM;
+        window.setAttributes(attributes);
     }
 
     public EditProfileDialog(@NonNull Context context, int themeResId,OnEditChangedListener listener) {

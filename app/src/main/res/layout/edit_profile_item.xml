@@ -30,10 +30,12 @@
         android:layout_toLeftOf="@+id/iv_right_arraw"
         android:layout_centerVertical="true"
         android:id="@+id/tv_editprofile_value"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textColor="@color/gray"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:text="--------"
         />
       <ImageView
