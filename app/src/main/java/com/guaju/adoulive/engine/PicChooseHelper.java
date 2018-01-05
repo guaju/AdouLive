@@ -133,7 +133,7 @@ public class PicChooseHelper {
         return Uri.fromFile(picFile);
     }
 
-
+    //把24版本的不符合规定的uri转成content://开头的uri，这样就可以使用了
     public Uri formatUri(Uri uri) {
         Uri rightUri = uri;
         int sdkInt = Build.VERSION.SDK_INT;//拿到当前手机版本
@@ -151,7 +151,7 @@ public class PicChooseHelper {
 
         return rightUri;
     }
-
+    //为了拿到相机拍照后得到的图片uri
     public Uri getAlbumUri() {
         return createAlbumUri;
     }

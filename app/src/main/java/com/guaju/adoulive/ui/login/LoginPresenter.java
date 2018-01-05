@@ -1,10 +1,13 @@
 package com.guaju.adoulive.ui.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.guaju.adoulive.MainActivity;
 import com.guaju.adoulive.engine.TimProfileHelper;
-import com.guaju.adoulive.ui.profile.ProfileActivity;
+import com.guaju.adoulive.ui.profile.EditProfileActivity;
 import com.tencent.ilivesdk.ILiveCallBack;
 import com.tencent.ilivesdk.core.ILiveLoginManager;
 
@@ -46,7 +49,15 @@ public class LoginPresenter implements LoginContract.Presenter {
             public void onSuccess(Object data) {
                 mView.loginSuccess();
                 getUserInfo();
-                Intent intent = new Intent(loginActivity, ProfileActivity.class);
+                //判断是否第一次进入编辑中心
+                SharedPreferences sp = loginActivity.getSharedPreferences("isfirstenter", Context.MODE_PRIVATE);
+                boolean isfirst = sp.getBoolean("isfirst", true);
+                Intent intent;
+                if(isfirst){
+                 intent = new Intent(loginActivity, EditProfileActivity.class);
+                }else{
+                 intent = new Intent(loginActivity, MainActivity.class);
+                }
                 loginActivity.startActivity(intent);
 
 

@@ -1,4 +1,4 @@
-package com.guaju.adoulive.ui.profile;
+package com.guaju.adoulive.ui.mine;
 
 import com.guaju.adoulive.bean.AdouTimUserProfile;
 

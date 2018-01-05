@@ -13,9 +13,12 @@ import com.tencent.TIMValueCallBack;
  */
 
 public class TimProfileHelper {
-    private static TimProfileHelper helper = new TimProfileHelper();
+    private static TimProfileHelper helper;
 
     public static TimProfileHelper getInstance() {
+        if (helper==null){
+            helper=new TimProfileHelper();
+        }
         return helper;
     }
 

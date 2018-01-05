@@ -1,28 +1,39 @@
 package com.guaju.adoulive.ui.profile;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.guaju.adoulive.MainActivity;
 import com.guaju.adoulive.R;
+import com.guaju.adoulive.app.QiniuConfig;
 import com.guaju.adoulive.bean.AdouTimUserProfile;
 import com.guaju.adoulive.engine.PicChooseHelper;
+import com.guaju.adoulive.qiniu.QiniuUploadHelper;
 import com.guaju.adoulive.utils.ToastUtils;
 import com.guaju.adoulive.widget.EditProfileAvatarDialog;
 import com.guaju.adoulive.widget.EditProfileDialog;
 import com.guaju.adoulive.widget.EditProfileDialog2;
 import com.guaju.adoulive.widget.EditProfileItem;
 import com.guaju.adoulive.widget.EditProfile_Gender_Dialog;
+import com.orhanobut.logger.Logger;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCompletionHandler;
 import com.tencent.TIMCallBack;
 import com.tencent.TIMFriendGenderType;
 import com.tencent.TIMFriendshipManager;
 import com.tencent.TIMUserProfile;
+
+import org.json.JSONObject;
+
+import java.io.File;
 
 public class EditProfileActivity extends AppCompatActivity implements EditProfileContract.View, View.OnClickListener {
 
@@ -45,11 +56,17 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
     EditProfileAvatarDialog avatarDialog;
     private Uri outUri;
     private Button bt_save_profile;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor edit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+        sp = getSharedPreferences("isfirstenter",MODE_PRIVATE);
+        edit = sp.edit();
+        edit.putBoolean("isfirst",false);
+        edit.commit();
         initView();
         initListener();
         initPresenter();
@@ -105,6 +122,9 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
             TIMFriendGenderType gender = userProfile.getGender();
             String location = userProfile.getLocation();
             String selfSignature = userProfile.getSelfSignature();
+            if (!TextUtils.isEmpty(faceUrl)){
+                ep_avatar.setAvatar(faceUrl);
+            }
             if (!TextUtils.isEmpty(nickName)) {
                 ep_nickname.setValue(nickName);
             }
@@ -173,6 +193,8 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
             case R.id.bt_save_profile:
                 finish();
                 Intent intent = new Intent(this, MainActivity.class);
+                //添加标记 说明是从这跳过取得
+                intent.putExtra("from","EditProfileActivity");
                 startActivity(intent);
             default:
                 break;
@@ -181,17 +203,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
     }
 
     private void showSelectAvatarDialog() {
-        avatarDialog = new EditProfileAvatarDialog(this, R.style.common_dialog_style, new EditProfileAvatarDialog.OnEditChangedListener() {
-            @Override
-            public void onChanged(String value) {
-
-            }
-
-            @Override
-            public void onContentEmpty() {
-
-            }
-        });
+        avatarDialog = new EditProfileAvatarDialog(this, R.style.common_dialog_style);
         avatarDialog.show();
     }
 
@@ -338,6 +350,51 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
             public void onReady(Uri outUri) {
                 ep_avatar.setAvatar(outUri);
                 avatarDialog.dismiss();
+                //需要把路径传到服务器（七牛）
+                String path = outUri.getPath();
+                File file = new File(path);
+                String absolutePath = file.getAbsolutePath();
+                String name = file.getName();
+                try {
+                    QiniuUploadHelper.uploadPic(absolutePath,name, new UpCompletionHandler() {
+                        @Override
+                        public void complete(String key, ResponseInfo info, JSONObject res) {
+                            //res包含hash、key等信息，具体字段取决于上传策略的设置
+                            if(info.isOK()) {
+
+                                Logger.i("qiniu", "Upload Success");
+                                updateNetAvatarInfo(QiniuConfig.QINIU_HOST+key);
+
+                            } else {
+                                Logger.i("qiniu", "Upload Fail");
+                                //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
+                            }
+                            Log.i("qiniu", key + ",\r\n " + info + ",\r\n " + res);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+        });
+    }
+
+    private void updateNetAvatarInfo(String url) {
+        //需要把图片同步到服务器
+        TIMFriendshipManager.getInstance().setFaceUrl(url, new TIMCallBack() {
+            @Override
+            public void onError(int i, String s) {
+                updateInfoError();
+
+            }
+
+            @Override
+            public void onSuccess() {
+                //重置缓存信息
+               presenter.onUpdateInfoSuccess();
             }
         });
     }

@@ -25,16 +25,10 @@ public class EditProfileAvatarDialog implements View.OnClickListener {
 
 
 
-    OnEditChangedListener listener;
     private TextView tv_photo;
     private TextView tv_camera;
     private LinearLayout ll_cancel;
 
-    public interface OnEditChangedListener {
-        void onChanged(String value);
-
-        void onContentEmpty();
-    }
 
     Activity activity;
     LayoutInflater inflater;
@@ -45,10 +39,9 @@ public class EditProfileAvatarDialog implements View.OnClickListener {
     private Display display;
     private ViewGroup.LayoutParams layoutParams;
 
-    public EditProfileAvatarDialog(@NonNull Activity activity, OnEditChangedListener listener) {
+    public EditProfileAvatarDialog(@NonNull Activity activity) {
         this.activity = activity;
         dialog = new Dialog(activity);
-        this.listener = listener;
         init();
     }
 
@@ -79,6 +72,7 @@ public class EditProfileAvatarDialog implements View.OnClickListener {
         ll_cancel.setOnClickListener(this);
 
         dialog.setContentView(v);
+        //通过window设置dialog的宽高和位置
         Window window = dialog.getWindow();
         WindowManager.LayoutParams attributes = window.getAttributes();
         attributes.width = display.getWidth();
@@ -87,11 +81,10 @@ public class EditProfileAvatarDialog implements View.OnClickListener {
         window.setAttributes(attributes);
     }
 
-    public EditProfileAvatarDialog(@NonNull Activity activity, int themeResId, OnEditChangedListener listener) {
+    public EditProfileAvatarDialog(@NonNull Activity activity, int themeResId) {
         this.activity = activity;
         //把dialog实例化
         dialog = new Dialog(activity, themeResId);
-        this.listener = listener;
         init();
     }
 
@@ -99,7 +92,7 @@ public class EditProfileAvatarDialog implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_photo:
-               PicChooseHelper.getInstance(activity).startPhotoSelectIntent();
+                PicChooseHelper.getInstance(activity).startPhotoSelectIntent();
                 break;
             case R.id.tv_camera:
                 PicChooseHelper.getInstance(activity).startCameraIntent();

@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.bean.AdouTimUserProfile;
+import com.guaju.adoulive.ui.mine.ProfileContract;
+import com.guaju.adoulive.ui.mine.ProfilePresenter;
 import com.guaju.adoulive.utils.ImageUtils;
 import com.guaju.adoulive.utils.ToastUtils;
 import com.tencent.TIMFriendGenderType;

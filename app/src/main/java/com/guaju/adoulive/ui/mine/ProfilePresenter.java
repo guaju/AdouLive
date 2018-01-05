@@ -1,4 +1,4 @@
-package com.guaju.adoulive.ui.profile;
+package com.guaju.adoulive.ui.mine;
 
 import com.guaju.adoulive.bean.AdouTimUserProfile;
 import com.guaju.adoulive.engine.TimProfileHelper;
@@ -9,17 +9,17 @@ import com.guaju.adoulive.engine.TimProfileHelper;
 
 public class ProfilePresenter implements ProfileContract.Presenter {
     ProfileContract.View view;
-    ProfileActivity activity;
+    MineFragment mineFragment;
 
     public ProfilePresenter(ProfileContract.View view) {
         this.view = view;
-        activity=(ProfileActivity)view;
+        mineFragment=(MineFragment)view;
     }
 
     @Override
     public void getUserProfile() {
 
-            new TimProfileHelper().getSelfProfile(activity, new TimProfileHelper.OnProfileGet() {
+            new TimProfileHelper().getSelfProfile(mineFragment.getActivity(), new TimProfileHelper.OnProfileGet() {
                 @Override
                 public void onGet(AdouTimUserProfile mProfile) {
                     view.updateProfile(mProfile);
