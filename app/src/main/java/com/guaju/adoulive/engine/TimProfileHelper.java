@@ -4,9 +4,12 @@ import android.app.Activity;
 
 import com.guaju.adoulive.app.AdouApplication;
 import com.guaju.adoulive.bean.AdouTimUserProfile;
+import com.guaju.adoulive.timcustom.CustomTimProfileInfo;
 import com.tencent.TIMFriendshipManager;
 import com.tencent.TIMUserProfile;
 import com.tencent.TIMValueCallBack;
+
+import java.util.Map;
 
 /**
  * Created by guaju on 2018/1/2.
@@ -16,14 +19,15 @@ public class TimProfileHelper {
     private static TimProfileHelper helper;
 
     public static TimProfileHelper getInstance() {
-        if (helper==null){
-            helper=new TimProfileHelper();
+        if (helper == null) {
+            helper = new TimProfileHelper();
         }
         return helper;
     }
 
     public interface OnProfileGet {
         void onGet(AdouTimUserProfile mProfile);
+
         void noGet();
     }
 
@@ -51,37 +55,55 @@ public class TimProfileHelper {
                     mProfile.setProfile(profile);
                 }
                 //附加信息
-//            Map<String, byte[]> customInfo = profile.getCustomInfo();
-//            byte[] gradeBytes = customInfo.get(CustomTimProfileInfo.INFO_GRADE);
-//            byte[] receiveBytes = customInfo.get(CustomTimProfileInfo.INFO_RECEIVE);
-//            byte[] sendBytes = customInfo.get(CustomTimProfileInfo.INFO_SEND);
-//            byte[] xingzuoBytes = customInfo.get(CustomTimProfileInfo.INFO_XINGZUO);
-//            if (gradeBytes!=null){
-//                mProfile.setGrade(Integer.parseInt(new String(gradeBytes)));
-//            }
-//            if (receiveBytes!=null){
-//                mProfile.setReceive(Integer.parseInt(new String(receiveBytes)));
-//            }
-//            if (sendBytes!=null){
-//                mProfile.setSend(Integer.parseInt(new String(sendBytes)));
-//            }
-//            if (xingzuoBytes!=null){
-//                mProfile.setXingzuo(new String(xingzuoBytes));
-//            }
-                AdouApplication.getApp().setAdouTimUserProfile(mProfile);
-                if (onProfileGet != null)
-                    onProfileGet.onGet(mProfile);
-            }
+                Map<String, byte[]> customInfo = profile.getCustomInfo();
+                if (customInfo!=null&&!customInfo.isEmpty()) {
 
+                    if (customInfo.containsKey(CustomTimProfileInfo.INFO_GRADE)) {
+                        byte[] gradeBytes = customInfo.get(CustomTimProfileInfo.INFO_GRADE);
+                        if (gradeBytes != null) {
+                            //设置等级
+                            mProfile.setGrade(Integer.parseInt(new String(gradeBytes)));
+                        }
+                    }
+                    if (customInfo.containsKey(CustomTimProfileInfo.INFO_RECEIVE)) {
+                        byte[] receiveBytes = customInfo.get(CustomTimProfileInfo.INFO_RECEIVE);
+                        if (receiveBytes != null) {
+                            //设置接收的礼物
+                            mProfile.setReceive(Integer.parseInt(new String(receiveBytes)));
+                        }
+                    }
+                    if (customInfo.containsKey(CustomTimProfileInfo.INFO_SEND)) {
+                        byte[] sendBytes = customInfo.get(CustomTimProfileInfo.INFO_SEND);
+                        if (sendBytes != null) {
+                            //设置发送出去的礼物
+                            mProfile.setSend(Integer.parseInt(new String(sendBytes)));
+                        }
+                    }
+                    if (customInfo.containsKey(CustomTimProfileInfo.INFO_XINGZUO)) {
+                        byte[] xingzuoBytes = customInfo.get(CustomTimProfileInfo.INFO_XINGZUO);
+                        if (xingzuoBytes != null) {
+                            //设置星族
+                            mProfile.setXingzuo(new String(xingzuoBytes));
+                        }
+                    }
+                }
+                    AdouApplication.getApp().setAdouTimUserProfile(mProfile);
+                    if (onProfileGet != null)
+                        onProfileGet.onGet(mProfile);
+
+
+            }
         });
     }
+
     //重置应用中保存的信息
-    public void resetApplicationProfile(final OnProfileGet onProfileGet){
+    public void resetApplicationProfile(final OnProfileGet onProfileGet) {
         TIMFriendshipManager.getInstance().getSelfProfile(new TIMValueCallBack<TIMUserProfile>() {
             @Override
             public void onError(int i, String s) {
-                 onProfileGet.noGet();
+                onProfileGet.noGet();
             }
+
             @Override
             public void onSuccess(TIMUserProfile profile) {
                 AdouTimUserProfile mProfile = new AdouTimUserProfile();
@@ -91,25 +113,38 @@ public class TimProfileHelper {
                     onProfileGet.onGet(mProfile);
                 }
                 //附加信息
-//            Map<String, byte[]> customInfo = profile.getCustomInfo();
-//            byte[] gradeBytes = customInfo.get(CustomTimProfileInfo.INFO_GRADE);
-//            byte[] receiveBytes = customInfo.get(CustomTimProfileInfo.INFO_RECEIVE);
-//            byte[] sendBytes = customInfo.get(CustomTimProfileInfo.INFO_SEND);
-//            byte[] xingzuoBytes = customInfo.get(CustomTimProfileInfo.INFO_XINGZUO);
-//            if (gradeBytes!=null){
-//                mProfile.setGrade(Integer.parseInt(new String(gradeBytes)));
-//            }
-//            if (receiveBytes!=null){
-//                mProfile.setReceive(Integer.parseInt(new String(receiveBytes)));
-//            }
-//            if (sendBytes!=null){
-//                mProfile.setSend(Integer.parseInt(new String(sendBytes)));
-//            }
-//            if (xingzuoBytes!=null){
-//                mProfile.setXingzuo(new String(xingzuoBytes));
-//            }
+                Map<String, byte[]> customInfo = profile.getCustomInfo();
+                if (customInfo!=null&&customInfo.size() > 0) {
+
+                    if (customInfo.containsKey(CustomTimProfileInfo.INFO_GRADE)) {
+                        byte[] gradeBytes = customInfo.get(CustomTimProfileInfo.INFO_GRADE);
+                        if (gradeBytes != null) {
+                            mProfile.setGrade(Integer.parseInt(new String(gradeBytes)));
+                        }
+                    }
+                    if (customInfo.containsKey(CustomTimProfileInfo.INFO_RECEIVE)) {
+                        byte[] receiveBytes = customInfo.get(CustomTimProfileInfo.INFO_RECEIVE);
+                        if (receiveBytes != null) {
+                            mProfile.setReceive(Integer.parseInt(new String(receiveBytes)));
+                        }
+                    }
+                    if (customInfo.containsKey(CustomTimProfileInfo.INFO_SEND)) {
+                        byte[] sendBytes = customInfo.get(CustomTimProfileInfo.INFO_SEND);
+                        if (sendBytes != null) {
+                            mProfile.setSend(Integer.parseInt(new String(sendBytes)));
+                        }
+                    }
+                    if (customInfo.containsKey(CustomTimProfileInfo.INFO_XINGZUO)) {
+                        byte[] xingzuoBytes = customInfo.get(CustomTimProfileInfo.INFO_XINGZUO);
+                        if (xingzuoBytes != null) {
+                            mProfile.setXingzuo(new String(xingzuoBytes));
+
+                        }
+                    }
+                }
                 AdouApplication.getApp().setAdouTimUserProfile(mProfile);
             }
+
 
         });
     }

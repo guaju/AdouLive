@@ -17,8 +17,9 @@ import com.guaju.adoulive.app.QiniuConfig;
 import com.guaju.adoulive.bean.AdouTimUserProfile;
 import com.guaju.adoulive.engine.PicChooseHelper;
 import com.guaju.adoulive.qiniu.QiniuUploadHelper;
+import com.guaju.adoulive.timcustom.CustomTimProfileInfo;
 import com.guaju.adoulive.utils.ToastUtils;
-import com.guaju.adoulive.widget.EditProfileAvatarDialog;
+import com.guaju.adoulive.widget.SelectPicDialog;
 import com.guaju.adoulive.widget.EditProfileDialog;
 import com.guaju.adoulive.widget.EditProfileDialog2;
 import com.guaju.adoulive.widget.EditProfileItem;
@@ -53,7 +54,9 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
     EditProfileDialog2 activeDialog;
     EditProfileDialog2 signatrueDialog;
     EditProfile_Gender_Dialog genderDialog;
-    EditProfileAvatarDialog avatarDialog;
+    SelectPicDialog avatarDialog;
+    EditProfileDialog2 editXingzuoDialog;
+
     private Uri outUri;
     private Button bt_save_profile;
     private SharedPreferences sp;
@@ -63,9 +66,9 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        sp = getSharedPreferences("isfirstenter",MODE_PRIVATE);
+        sp = getSharedPreferences("isfirstenter", MODE_PRIVATE);
         edit = sp.edit();
-        edit.putBoolean("isfirst",false);
+        edit.putBoolean("isfirst", false);
         edit.commit();
         initView();
         initListener();
@@ -122,7 +125,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
             TIMFriendGenderType gender = userProfile.getGender();
             String location = userProfile.getLocation();
             String selfSignature = userProfile.getSelfSignature();
-            if (!TextUtils.isEmpty(faceUrl)){
+            if (!TextUtils.isEmpty(faceUrl)) {
                 ep_avatar.setAvatar(faceUrl);
             }
             if (!TextUtils.isEmpty(nickName)) {
@@ -143,6 +146,11 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
                 ep_gender.setValue("女");
             } else {
                 ep_gender.setValue("未知");
+            }
+            //自定义信息
+            String xingzuo = profile.getXingzuo();
+            if (!TextUtils.isEmpty(xingzuo)){
+                ep_xingzuo.setValue(xingzuo);
             }
 
 
@@ -189,12 +197,14 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
                 showEditSignatureDialog();
                 break;
             case R.id.ep_xingzuo:
+                showEditXingzuoDialog();
+
                 break;
             case R.id.bt_save_profile:
                 finish();
                 Intent intent = new Intent(this, MainActivity.class);
                 //添加标记 说明是从这跳过取得
-                intent.putExtra("from","EditProfileActivity");
+                intent.putExtra("from", "EditProfileActivity");
                 startActivity(intent);
             default:
                 break;
@@ -202,8 +212,41 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
         }
     }
 
+    private void showEditXingzuoDialog() {
+        editXingzuoDialog = new EditProfileDialog2(this, new EditProfileDialog2.OnProfileChangedListener() {
+            @Override
+            public void onChangeSuccess(final String value) {
+
+                TIMFriendshipManager.getInstance().setCustomInfo(CustomTimProfileInfo.INFO_XINGZUO, value.getBytes(), new TIMCallBack() {
+                    @Override
+                    public void onError(int i, String s) {
+
+                    }
+
+                    @Override
+                    public void onSuccess() {
+
+                        editXingzuoDialog.hide();
+                        editXingzuoDialog = null;
+                        presenter.onUpdateInfoSuccess();
+                        Logger.e(value);
+                        ep_xingzuo.setValue(value);
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onChangeError() {
+            }
+        });
+        editXingzuoDialog.setTitleAndIcon("请输入您的星座", R.mipmap.male);
+        editXingzuoDialog.show();
+    }
+
     private void showSelectAvatarDialog() {
-        avatarDialog = new EditProfileAvatarDialog(this, R.style.common_dialog_style);
+        avatarDialog = new SelectPicDialog(this, R.style.common_dialog_style);
         avatarDialog.show();
     }
 
@@ -251,6 +294,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
                     @Override
                     public void onError(int i, String s) {
                     }
+
                     @Override
                     public void onSuccess() {
                         signatrueDialog.hide();
@@ -259,6 +303,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
                     }
                 });
             }
+
             @Override
             public void onChangeError() {
             }
@@ -345,7 +390,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        PicChooseHelper.getInstance(this).onActivityResult(requestCode, resultCode, data, new PicChooseHelper.OnAvatarReadyListener() {
+        PicChooseHelper.getInstance(this).onActivityResult(requestCode, resultCode, data, PicChooseHelper.CropType.Avatar,new PicChooseHelper.OnPicReadyListener() {
             @Override
             public void onReady(Uri outUri) {
                 ep_avatar.setAvatar(outUri);
@@ -356,14 +401,14 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
                 String absolutePath = file.getAbsolutePath();
                 String name = file.getName();
                 try {
-                    QiniuUploadHelper.uploadPic(absolutePath,name, new UpCompletionHandler() {
+                    QiniuUploadHelper.uploadPic(absolutePath, name, new UpCompletionHandler() {
                         @Override
                         public void complete(String key, ResponseInfo info, JSONObject res) {
                             //res包含hash、key等信息，具体字段取决于上传策略的设置
-                            if(info.isOK()) {
+                            if (info.isOK()) {
 
                                 Logger.i("qiniu", "Upload Success");
-                                updateNetAvatarInfo(QiniuConfig.QINIU_HOST+key);
+                                updateNetAvatarInfo(QiniuConfig.QINIU_HOST + key);
 
                             } else {
                                 Logger.i("qiniu", "Upload Fail");
@@ -375,7 +420,6 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
 
 
             }
@@ -394,7 +438,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
             @Override
             public void onSuccess() {
                 //重置缓存信息
-               presenter.onUpdateInfoSuccess();
+                presenter.onUpdateInfoSuccess();
             }
         });
     }

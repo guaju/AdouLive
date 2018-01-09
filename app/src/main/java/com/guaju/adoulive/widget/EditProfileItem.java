@@ -30,7 +30,7 @@ public class EditProfileItem extends FrameLayout {
     private LayoutInflater inflater;
     private TextView tv_editprofile_name;
     private TextView tv_editprofile_value,tv_seperater;
-    private ImageView iv_editprofile_avatar,iv_right_arraw;
+    private ImageView iv_editprofile_avatar,iv_right_arraw,iv_icon;
     private RelativeLayout rl;
     //在java代码中new 这个组件的时候使用
     public EditProfileItem(@NonNull Context context) {
@@ -48,6 +48,7 @@ public class EditProfileItem extends FrameLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.EditProfileItem);
         int itemtype = typedArray.getInt(R.styleable.EditProfileItem_itemtype, 101);
         String itemtitle = typedArray.getString(R.styleable.EditProfileItem_itemtitle);
+        int leftIcon = typedArray.getInt(R.styleable.EditProfileItem_lefticon, 0);
 
         if (!TextUtils.isEmpty(itemtitle)) {
             tv_editprofile_name.setText(itemtitle);
@@ -68,6 +69,15 @@ public class EditProfileItem extends FrameLayout {
         else if (itemtype==ItemType.TYPE_AVATAR.getValue()){
             setType(ItemType.TYPE_AVATAR);
         }
+        if (leftIcon!=0){
+            iv_icon.setBackgroundResource(leftIcon);
+            iv_icon.setVisibility(View.VISIBLE);
+
+        }else{
+            iv_icon.setVisibility(View.GONE);
+        }
+
+
         //是否可编辑
         boolean value = typedArray.getBoolean(R.styleable.EditProfileItem_iseditable, true);
         if (!value){
@@ -90,6 +100,7 @@ public class EditProfileItem extends FrameLayout {
         iv_editprofile_avatar = view.findViewById(R.id.iv_editprofile_avatar);
         tv_seperater = view.findViewById(R.id.tv_seperater);
         iv_right_arraw = view.findViewById(R.id.iv_right_arraw);
+        iv_icon = view.findViewById(R.id.iv_icon);
         addView(view);
     }
     //通过java去设置name和value

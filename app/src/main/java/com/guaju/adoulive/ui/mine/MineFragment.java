@@ -35,8 +35,8 @@ public class MineFragment extends Fragment  implements ProfileContract.View{
     private TextView tv_acount_id;
     private ImageView iv_gender;
     private TextView tv_grade;
-    private TextView tv_my_fork;
-    private TextView tv_my_fans;
+    private TextView tv_send;
+    private TextView tv_receive;
     private MainActivity mainActivity;
 
 
@@ -69,8 +69,8 @@ public class MineFragment extends Fragment  implements ProfileContract.View{
         tv_acount_id = view.findViewById(R.id.tv_acount_id);
         iv_gender = view.findViewById(R.id.iv_gender);
         tv_grade = view.findViewById(R.id.tv_grade);
-        tv_my_fans = view.findViewById(R.id.tv_my_fans);
-        tv_my_fork = view.findViewById(R.id.tv_my_fork);
+        tv_receive = view.findViewById(R.id.tv_receive);
+        tv_send = view.findViewById(R.id.tv_send);
 
     }
 
@@ -117,8 +117,8 @@ public class MineFragment extends Fragment  implements ProfileContract.View{
             iv_gender.setBackgroundResource(R.mipmap.male);
         }
         tv_grade.setText(profile.getGrade()+"");
-        tv_my_fork.setText(profile.getFork()+"");
-        tv_my_fans.setText(profile.getFans()+"");
+        tv_send.setText(profile.getFork()+"");
+        tv_receive.setText(profile.getFans()+"");
 
     }
 

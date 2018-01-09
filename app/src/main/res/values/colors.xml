@@ -16,6 +16,7 @@
     <color name="confim_red">#e80e3c</color>
     <color name="little_pink">#edd7d7</color>
     <color name="deep_pink">#fc7878</color>
+    <color name="deep_pink_pressed">#ec4848</color>
     <color name="green">#0f0</color>
     <color name="transprant">#0fff</color>
     <color name="pink_pressed">#f00</color>

@@ -21,7 +21,7 @@ import com.guaju.adoulive.engine.PicChooseHelper;
  * Created by guaju on 2018/1/3.
  */
 
-public class EditProfileAvatarDialog implements View.OnClickListener {
+public class SelectPicDialog implements View.OnClickListener {
 
 
 
@@ -39,7 +39,7 @@ public class EditProfileAvatarDialog implements View.OnClickListener {
     private Display display;
     private ViewGroup.LayoutParams layoutParams;
 
-    public EditProfileAvatarDialog(@NonNull Activity activity) {
+    public SelectPicDialog(@NonNull Activity activity) {
         this.activity = activity;
         dialog = new Dialog(activity);
         init();
@@ -81,7 +81,7 @@ public class EditProfileAvatarDialog implements View.OnClickListener {
         window.setAttributes(attributes);
     }
 
-    public EditProfileAvatarDialog(@NonNull Activity activity, int themeResId) {
+    public SelectPicDialog(@NonNull Activity activity, int themeResId) {
         this.activity = activity;
         //把dialog实例化
         dialog = new Dialog(activity, themeResId);

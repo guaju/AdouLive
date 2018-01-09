@@ -6,10 +6,20 @@
     android:layout_height="50dp"
     android:background="@color/white"
     >
+
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_marginLeft="12sp"
+        android:layout_centerVertical="true"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@mipmap/acount2"
+        />
+
     <TextView
+        android:layout_toRightOf="@+id/iv_icon"
         android:id="@+id/tv_editprofile_name"
-        android:layout_marginLeft="12dp"
-        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="5dp"
         android:layout_centerVertical="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

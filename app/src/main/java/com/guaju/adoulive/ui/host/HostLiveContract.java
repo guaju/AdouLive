@@ -5,4 +5,10 @@ package com.guaju.adoulive.ui.host;
  */
 
 public class HostLiveContract {
+    interface View{
+
+    }
+    interface  Presenter{
+        void createHost();
+    }
 }

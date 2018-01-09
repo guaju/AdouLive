@@ -28,9 +28,13 @@
 
         <activity android:name=".ui.profile.EditProfileActivity"
             android:screenOrientation="portrait">
-
-
         </activity>
+        <activity android:name=".ui.createlive.CreateLiveActivity"
+            android:screenOrientation="portrait"
+            ></activity>
+        <activity android:name=".ui.host.HostLiveActivity"
+            android:screenOrientation="portrait"
+            ></activity>
     </application>
 
 </manifest>

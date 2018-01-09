@@ -10,11 +10,12 @@ import java.util.List;
  */
 
 public interface CustomTimProfileInfo {
+    //前缀必须是这个
     String PREFIX="Tag_Profile_Custom_";
-    String INFO_SEND = PREFIX+"send";
-    String INFO_RECEIVE = PREFIX+"receive";
-    String INFO_GRADE = PREFIX+"grade";
-    String INFO_XINGZUO = PREFIX+"xingzuo";
+    String INFO_SEND = PREFIX+"Send";
+    String INFO_RECEIVE = PREFIX+"Receive";
+    String INFO_GRADE = PREFIX+"Grade";
+    String INFO_XINGZUO = PREFIX+"Xingzuo";
     String INFO_FANS = PREFIX+"fans";
     String INFO_FORK = PREFIX+"fork";
     String[] name = {INFO_SEND, INFO_RECEIVE, INFO_GRADE, INFO_XINGZUO, INFO_FANS, INFO_FORK};

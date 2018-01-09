@@ -3,7 +3,6 @@
 
 <LinearLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -22,7 +21,9 @@
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_profile"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                >
 
                 <ImageView
                     android:id="@+id/iv_avatar"
@@ -127,7 +128,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tv_my_fork"
+                        android:id="@+id/tv_send"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -137,7 +138,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="我的关注"
+                        android:text="送出"
                         android:textColor="@color/gray"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -156,7 +157,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tv_my_fans"
+                        android:id="@+id/tv_receive"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -166,12 +167,50 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="我的粉丝"
+                        android:text="收到"
                         android:textColor="@color/gray"
                         android:textSize="16sp" />
                 </LinearLayout>
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/little_gray"
+                />
+
+            <com.guaju.adoulive.widget.ProfileItem
+                android:id="@+id/ep_acount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:profilelefticon="@mipmap/acount2"
+                app:profileitemtitle="账户"
+                />
+
+            <com.guaju.adoulive.widget.ProfileItem
+                android:id="@+id/ep_get"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:profilelefticon="@mipmap/get"
+                app:profileitemtitle="收益"                />
+
+            <com.guaju.adoulive.widget.ProfileItem
+                android:id="@+id/ep_watch_record"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:profilelefticon="@mipmap/record"
+                app:profileitemtitle="观看记录"
+                />
+
+            <com.guaju.adoulive.widget.ProfileItem
+                android:id="@+id/ep_grade"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:profilelefticon="@mipmap/grade_2"
+                app:profileitemtitle="等级"
+                />
+
 
 
         </LinearLayout>

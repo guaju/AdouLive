@@ -37,4 +37,24 @@ public class ImageUtils {
                 .apply(RequestOptions.circleCropTransform())
                 .into(iv);
     }
+
+    public void load(String url,ImageView iv){
+        RequestOptions options=new RequestOptions();
+        //中心裁剪样式
+        options.centerCrop();
+        Glide.with(AdouApplication.getApp())
+                .load(url)
+                .apply(options)
+                .into(iv);
+    }
+    public void load(Uri uri,ImageView iv){
+        Glide.with(AdouApplication.getApp())
+                .load(uri)
+                .into(iv);
+    }
+    public void load(int resId,ImageView iv){
+        Glide.with(AdouApplication.getApp())
+                .load(resId)
+                .into(iv);
+    }
 }

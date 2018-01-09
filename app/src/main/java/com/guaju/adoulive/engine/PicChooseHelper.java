@@ -22,6 +22,11 @@ import java.io.IOException;
  */
 
 public class PicChooseHelper {
+  public   enum  CropType{
+      Avatar,Cover;
+  }
+
+
     private static final int REQUEST_SELECT_PHOTO = 101;
     private static final int REQUEST_TAKE_CAMERA = 102;
     private static final int REQUEST_CROP = 103;
@@ -32,7 +37,7 @@ public class PicChooseHelper {
     private Uri outUri;
 
 
-    public interface OnAvatarReadyListener {
+    public interface OnPicReadyListener {
         void onReady(Uri outUri);
     }
 
@@ -184,7 +189,7 @@ public class PicChooseHelper {
     }
 
     //开启截图意图
-    private void startCrop(Intent data) {
+    private void startCrop(Intent data,CropType cropType) {
         Uri uri;
         if (data == null) {
             uri = getAlbumUri();
@@ -196,10 +201,17 @@ public class PicChooseHelper {
         //创建裁剪之后那个uri
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.putExtra("crop", "true");
+        if (cropType==CropType.Avatar){
         intent.putExtra("aspectX", 500);
         intent.putExtra("aspectY", 500);
         intent.putExtra("outputX", 500);
         intent.putExtra("outputY", 500);
+        }else if (cropType==CropType.Cover){
+            intent.putExtra("aspectX", 500);
+            intent.putExtra("aspectY", 300);
+            intent.putExtra("outputX", 500);
+            intent.putExtra("outputY", 300);
+        }
         // 设置为true直接返回bitmap,这里不做输出，只需要指定我们自己定义uri即可
         intent.putExtra("return-data", false);
         //设置输出图片格式
@@ -215,14 +227,14 @@ public class PicChooseHelper {
         mActivity.startActivityForResult(intent, REQUEST_CROP);
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data,OnAvatarReadyListener listener) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data,CropType cropType,OnPicReadyListener listener) {
         if (requestCode == REQUEST_SELECT_PHOTO) {
             if (resultCode == Activity.RESULT_OK) {
-                startCrop(data);
+                startCrop(data,cropType);
             }
         } else if (requestCode == REQUEST_TAKE_CAMERA) {
             if (resultCode == Activity.RESULT_OK) {
-                startCrop(data);
+                startCrop(data,cropType);
             }
         } else if (requestCode == REQUEST_CROP) {
             if (resultCode == Activity.RESULT_OK) {

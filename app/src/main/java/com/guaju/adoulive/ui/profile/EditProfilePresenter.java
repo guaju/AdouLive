@@ -2,6 +2,7 @@ package com.guaju.adoulive.ui.profile;
 
 import com.guaju.adoulive.bean.AdouTimUserProfile;
 import com.guaju.adoulive.engine.TimProfileHelper;
+import com.orhanobut.logger.Logger;
 
 /**
  * Created by guaju on 2018/1/3.
@@ -21,7 +22,6 @@ public class EditProfilePresenter implements EditProfileContract.Presenter {
     @Override
     public void getUserInfo() {
         //app拿，如果没有再自己去获取
-
         TimProfileHelper.getInstance().getSelfProfile(editProfileActivity, new TimProfileHelper.OnProfileGet() {
             @Override
             public void onGet(AdouTimUserProfile mProfile) {
@@ -43,7 +43,9 @@ public class EditProfilePresenter implements EditProfileContract.Presenter {
       TimProfileHelper.getInstance().resetApplicationProfile(new TimProfileHelper.OnProfileGet() {
           @Override
           public void onGet(AdouTimUserProfile mProfile) {
+              Logger.e("先执行了");
               view.updateView(mProfile);
+
           }
 
           @Override
