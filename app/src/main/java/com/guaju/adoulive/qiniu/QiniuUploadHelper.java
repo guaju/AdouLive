@@ -3,7 +3,7 @@ package com.guaju.adoulive.qiniu;
 
 import android.util.Log;
 
-import com.guaju.adoulive.httputils.OkHttpUtils;
+import com.guaju.adoulive.httputil.OkHttpHelper;
 import com.orhanobut.logger.Logger;
 import com.qiniu.android.common.FixedZone;
 import com.qiniu.android.http.ResponseInfo;
@@ -74,7 +74,7 @@ public class QiniuUploadHelper {
         //TokenBean.ReturnBody returnBody = new TokenBean.ReturnBody("$(fname)", "$(fsize)", "$(imageInfo.width)", "$(imageInfo.height)", "$(etag)");
         TokenBean tokenBean = new TokenBean(scope, deadline);
         //2、把上传策略转化成json
-        String putPolicy = OkHttpUtils.getInstance().gson.toJson(tokenBean);
+        String putPolicy = OkHttpHelper.getInstance().gson.toJson(tokenBean);
         //3、URL 安全的 Base64 编码
         String encodedPutPolicy = UrlSafeBase64.encodeToString(putPolicy.getBytes());
         //4、使用访问密钥（AK/SK）对上一步生成的待签名字符串计算HMAC-SHA1签名：

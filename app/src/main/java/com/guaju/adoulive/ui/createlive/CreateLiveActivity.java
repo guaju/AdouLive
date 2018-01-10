@@ -51,6 +51,9 @@ public class CreateLiveActivity extends AppCompatActivity implements CreateLiveC
         initPresenter();
     }
 
+
+
+
     private void initPresenter() {
         this.presenter = new CreateLivePresenter(this);
     }

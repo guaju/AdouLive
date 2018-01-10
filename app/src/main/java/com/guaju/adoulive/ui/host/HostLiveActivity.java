@@ -27,7 +27,9 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View{
         initView();
         initPresenter();
         initCreateHost();
+
     }
+
 
     private void initCreateHost() {
         presenter.createHost();
