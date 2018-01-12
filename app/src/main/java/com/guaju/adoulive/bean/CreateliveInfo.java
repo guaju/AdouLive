@@ -1,16 +1,16 @@
 package com.guaju.adoulive.bean;
 
 /**
- * Created by guaju on 2018/1/11.
+ * Created by guaju on 2018/1/12.
  */
 
-public class HostRoomInfo {
+public class CreatliveInfo {
 
     /**
      * code : 1
      * errCode :
      * errMsg :
-     * data : {"roomId":894,"userId":"xiaoming","userName":"smartisan","userAvatar":"http://oucijhbtq.bkt.clouddn.com/龙纹身的女孩.jpg","liveCover":"http://oucijhbtq.bkt.clouddn.com/龙纹身的女孩.jpg","liveTitle":"很黄很暴力","watcherNums":0}
+     * data : {"roomId":35,"userId":"xiaoming","userName":"","userAvatar":"http://oucijhbtq.bkt.clouddn.com/龙纹身的女孩.jpg","liveCover":"","liveTitle":"","watcherNums":0}
      */
 
     private String code;
@@ -52,12 +52,12 @@ public class HostRoomInfo {
 
     public static class DataBean {
         /**
-         * roomId : 894
+         * roomId : 35
          * userId : xiaoming
-         * userName : smartisan
+         * userName :
          * userAvatar : http://oucijhbtq.bkt.clouddn.com/龙纹身的女孩.jpg
-         * liveCover : http://oucijhbtq.bkt.clouddn.com/龙纹身的女孩.jpg
-         * liveTitle : 很黄很暴力
+         * liveCover :
+         * liveTitle :
          * watcherNums : 0
          */
 
