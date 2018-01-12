@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -359,6 +360,105 @@ public class OkHttpHelper {
                     if (!TextUtils.isEmpty(string)) {
                         //把返回过来的json串转成bean
                         final Object obj = gson.fromJson(string, clazz);
+                        if (obj == null) {
+                            mainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onRequestComplete.onEmpty();
+                                }
+                            });
+                        } else {
+                            mainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onRequestComplete.onSuccess(obj);
+                                }
+                            });
+                        }
+
+                    } else {
+                        //当string为空的时候
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                onRequestComplete.onEmpty();
+                            }
+                        });
+                    }
+
+
+                } else {
+                    //虽然已经连通到这个网址了，但是由于服务器的原因可能报了301，203，50几等等一些异常页面
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onRequestComplete.onError();
+                        }
+                    });
+                }
+
+
+            }
+        });
+    }
+
+    /**
+     *
+     * @param url
+     * @param map
+     * @param onRequestComplete
+     * @param type    类似字节码文件 ，可以通过反射类型找到类
+     */
+    public void postObject(String url, HashMap<String, String> map, final OnRequestComplete onRequestComplete, final Type type) {
+
+
+        if (!url.startsWith("http")) {
+            //提示网址不对，访问失败
+
+            if (onRequestComplete != null) {
+                onRequestComplete.onFailed();
+            }
+            return;
+        }
+        //准备请求体  （由于本app上传图片使用的7牛，所以不需要准备上传mutipart类型的文件了）
+        FormBody.Builder fBuilder = new FormBody.Builder();
+        FormBody formBody = null;
+        //遍历map，把键值对添加进formbody当中
+        if (map != null && !map.isEmpty()) {
+            Set<Map.Entry<String, String>> entries = map.entrySet();
+            for (Map.Entry<String, String> entry : entries) {
+                fBuilder.add(entry.getKey(), entry.getValue());
+            }
+            formBody = fBuilder.build();
+        }
+
+        Request.Builder builder = new Request.Builder();
+        Request request = builder.url(url)
+                .post(formBody)
+//                .header()
+                .build();
+
+
+        Call call = client.newCall(request);
+        //异步的方法，这个方法内部自己会开启子线程去加载数据，然后通过回调去做数据获取完处理
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onRequestComplete.onFailed();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String string = response.body().string();
+                    if (!TextUtils.isEmpty(string)) {
+                        //把返回过来的json串转成bean
+                        final Object obj = gson.fromJson(string, type);
                         if (obj == null) {
                             mainHandler.post(new Runnable() {
                                 @Override

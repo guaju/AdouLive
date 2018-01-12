@@ -7,16 +7,66 @@
         android:id="@+id/iv_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@mipmap/cover_background"
         />
     <TextView
         android:id="@+id/tv_live_title"
+        android:layout_margin="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="哈哈哈"
+        android:text="直播标题"
         android:textColor="@color/white"
         android:textSize="18sp"
         />
+    <TextView
+        android:id="@+id/tv_hostid"
+        android:layout_margin="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="阿斗id:"
+        android:textColor="@color/yellow"
+        android:textSize="16sp"
+        />
+    <TextView
+        android:textStyle="bold|italic"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dp"
+        android:text="live"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:layout_width="60dp"
+        android:layout_height="24dp"
+        android:background="@drawable/shape_live_icon"
+        />
 
+    <TextView
+        android:id="@+id/tv_watch_nums"
+        android:textStyle="bold|italic"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dp"
+        android:text="123"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textColor="@color/little_pink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:layout_marginBottom="5dp"
+        android:id="@+id/tv_watch"
+        android:textStyle="bold|italic"
+        android:layout_toLeftOf="@+id/tv_watch_nums"
+        android:layout_alignParentBottom="true"
+        android:text="观看数量:"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textColor="@color/green"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 
 
 </RelativeLayout>

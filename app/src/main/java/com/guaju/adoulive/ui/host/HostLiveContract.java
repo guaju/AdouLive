@@ -9,6 +9,8 @@ public class HostLiveContract {
 
     }
     interface  Presenter{
-        void createHost();
+        void createHost(int roomId);
+        void quitHost(int roomId);
     }
+
 }

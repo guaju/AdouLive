@@ -5,7 +5,7 @@ import android.text.TextUtils;
 
 import com.guaju.adoulive.app.AdouApplication;
 import com.guaju.adoulive.bean.AdouTimUserProfile;
-import com.guaju.adoulive.bean.HostRoomInfo;
+import com.guaju.adoulive.bean.CreateliveInfo;
 import com.guaju.adoulive.httputil.BaseOnRequestComplete;
 import com.guaju.adoulive.httputil.Constants;
 import com.guaju.adoulive.httputil.OkHttpHelper;
@@ -58,15 +58,17 @@ public class CreateLivePresenter implements CreateLiveContract.Presenter {
         map.put("userName",profile1.getNickName()); //主播昵称
         map.put("liveTitle",liveName); //直播标题
         map.put("liveCover",cover); //直播封面
-        OkHttpHelper.getInstance().postObject(Constants.HOST, map, new BaseOnRequestComplete<HostRoomInfo>() {
+
+
+        OkHttpHelper.getInstance().postObject(Constants.HOST, map, new BaseOnRequestComplete<CreateliveInfo>() {
             @Override
-            public void onSuccess(HostRoomInfo info) {
+            public void onSuccess(CreateliveInfo info) {
                 //当创建直播成功后
-                HostRoomInfo.DataBean data = info.getData();
-                if (data!=null){
-                    int roomId = data.getRoomId();
+                if (info!=null){
+                    int roomId = info.getData().getRoomId();
                     if (roomId!=0){
                         Intent intent = new Intent(mActivity, HostLiveActivity.class);
+                        intent.putExtra("roomId",roomId);
                         mActivity.startActivity(intent);
                     }
                 }
@@ -77,7 +79,7 @@ public class CreateLivePresenter implements CreateLiveContract.Presenter {
 
 
             }
-        }, HostRoomInfo.class);
+        }, CreateliveInfo.class);
     }
 
     public CreateLivePresenter(CreateLiveContract.View view) {

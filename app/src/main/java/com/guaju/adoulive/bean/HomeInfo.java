@@ -3,7 +3,7 @@ package com.guaju.adoulive.bean;
 /**
  * Created by guaju on 2018/1/11.
  */
-
+ //直播房间的一些信息
 public class HomeInfo {
 
     /**
