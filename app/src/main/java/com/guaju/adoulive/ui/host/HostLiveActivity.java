@@ -9,6 +9,10 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.guaju.adoulive.R;
+import com.guaju.adoulive.utils.ToastUtils;
+import com.guaju.adoulive.widget.BottomChatSwitchLayout;
+import com.guaju.adoulive.widget.BottomSwitchLayout;
+import com.tencent.ilivesdk.ILiveCallBack;
 import com.tencent.ilivesdk.view.AVRootView;
 import com.tencent.livesdk.ILVLiveManager;
 
@@ -19,17 +23,22 @@ import com.tencent.livesdk.ILVLiveManager;
 public class HostLiveActivity extends Activity implements HostLiveContract.View{
 
     private AVRootView avRootView;
-    private ImageView iv_switch_camera,iv_close;
-
+    private ImageView iv_switch_camera;
+    private BottomSwitchLayout bottomswitchlayout;
     private HostPresenter presenter;
     private Toolbar toolbar;
     private int roomId;
+    private BottomChatSwitchLayout chatswitchlayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_live);
         initView();
+        setBottomSwitchListener();
+        //设置默认状态
+        setDefultStatus();
+
         initToolbar();
         initListener();
         initPresenter();
@@ -38,16 +47,14 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View{
 
     }
 
+    private void setDefultStatus() {
+        chatswitchlayout.setVisibility(View.INVISIBLE);
+        bottomswitchlayout.setVisibility(View.VISIBLE);
+    }
+
     private void initListener() {
         //iv_close
-        iv_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //关闭
-                //退出直播，然后关闭
-                presenter.quitHost(roomId);
-            }
-        });
+
     }
 
     private void initToolbar() {
@@ -79,8 +86,9 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View{
     private void initView() {
         toolbar = findViewById(R.id.toolbar);
         avRootView = findViewById(R.id.arv_root);
-        iv_close = findViewById(R.id.iv_close);
         iv_switch_camera = findViewById(R.id.iv_switch_camera);
+        bottomswitchlayout = findViewById(R.id.bottomswitchlayout);
+        chatswitchlayout = findViewById(R.id.chatswitchlayout);
         //将avrootview添加
         ILVLiveManager.getInstance().setAvVideoView(avRootView);
     }
@@ -101,9 +109,39 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View{
     protected void onDestroy() {
         super.onDestroy();
         //退出直播
-
+        quitRoom();
         ILVLiveManager.getInstance().onDestory();
     }
 
+    public  void  quitRoom(){
+        ILVLiveManager.getInstance().quitRoom(new ILiveCallBack() {
+            @Override
+            public void onSuccess(Object data) {
+                ToastUtils.show("退出直播成功");
+            }
+
+            @Override
+            public void onError(String module, int errCode, String errMsg) {
+                ToastUtils.show("退出直播失败，错误码"+errCode+"错误信息："+errMsg);
+            }
+        });
+    }
+    private void setBottomSwitchListener() {
+        bottomswitchlayout.setOnSwitchListener(new BottomSwitchLayout.OnSwitchListener() {
+            @Override
+            public void onChat() {
+                //聊天
+                chatswitchlayout.setVisibility(View.VISIBLE);
+                bottomswitchlayout.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onClose() {
+                //关闭时
+                finish();
+            }
+        });
+
+    }
 
 }

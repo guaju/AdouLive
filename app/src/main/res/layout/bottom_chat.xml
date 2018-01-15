@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:background="@color/alphawhite"
+    android:layout_height="50dp">
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="50dp"
+        android:button="@color/transprant"
+        android:layout_height="20.24dp"
+        android:background="@drawable/selector_danmu"
+        />
+    <EditText
+        android:id="@+id/et_content"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/tv_send"
+        android:textColor="@color/green"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:text="发送"
+        android:layout_width="50dp"
+        android:layout_height="match_parent" />
+
+    
+
+</LinearLayout>

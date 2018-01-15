@@ -19,6 +19,7 @@ public class HostPresenter implements HostLiveContract.Presenter {
     @Override
     public void createHost(int roomId) {
         LiveHelper.getInstance(hostLiveActivity).createRoom(roomId+"");
+
     }
 
     @Override

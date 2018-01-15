@@ -9,5 +9,10 @@
         android:id="@+id/av_rootview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
+    <com.guaju.adoulive.widget.BottomSwitchLayout
+        android:layout_alignParentBottom="true"
+        android:id="@+id/bottomswitchlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
 </RelativeLayout>
