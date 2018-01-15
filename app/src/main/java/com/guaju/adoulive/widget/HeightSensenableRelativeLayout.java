@@ -1,21 +1,22 @@
 package com.guaju.adoulive.widget;
 
 import android.content.Context;
-import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
+import android.widget.RelativeLayout;
 
 /**
  * Created by guaju on 2018/1/15.
  */
-//高度敏感的约束布局
-public class HeightSensenableConstrantLayout extends ConstraintLayout {
+
+public class HeightSensenableRelativeLayout extends RelativeLayout {
+
     OnLayoutHeightChangedListenser mListenser;
 
-    public HeightSensenableConstrantLayout(Context context) {
+    public HeightSensenableRelativeLayout(Context context) {
         super(context);
     }
 
-    public HeightSensenableConstrantLayout(Context context, AttributeSet attrs) {
+    public HeightSensenableRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -58,6 +59,4 @@ public class HeightSensenableConstrantLayout extends ConstraintLayout {
                                                           listenser) {
         mListenser = listenser;
     }
-
-
 }

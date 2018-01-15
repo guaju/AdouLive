@@ -17,7 +17,7 @@ import com.guaju.adoulive.app.QiniuConfig;
 import com.guaju.adoulive.bean.AdouTimUserProfile;
 import com.guaju.adoulive.engine.PicChooseHelper;
 import com.guaju.adoulive.qiniu.QiniuUploadHelper;
-import com.guaju.adoulive.timcustom.CustomTimProfileInfo;
+import com.guaju.adoulive.timcustom.CustomTimConstant;
 import com.guaju.adoulive.utils.ToastUtils;
 import com.guaju.adoulive.widget.SelectPicDialog;
 import com.guaju.adoulive.widget.EditProfileDialog;
@@ -217,7 +217,7 @@ public class EditProfileActivity extends AppCompatActivity implements EditProfil
             @Override
             public void onChangeSuccess(final String value) {
 
-                TIMFriendshipManager.getInstance().setCustomInfo(CustomTimProfileInfo.INFO_XINGZUO, value.getBytes(), new TIMCallBack() {
+                TIMFriendshipManager.getInstance().setCustomInfo(CustomTimConstant.INFO_XINGZUO, value.getBytes(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
 

@@ -5,7 +5,7 @@ import android.app.Application;
 import com.guaju.adoulive.bean.AdouTimUserProfile;
 import com.guaju.adoulive.engine.MessageObservable;
 import com.guaju.adoulive.qiniu.QiniuUploadHelper;
-import com.guaju.adoulive.timcustom.CustomTimProfileInfo;
+import com.guaju.adoulive.timcustom.CustomTimConstant;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
@@ -60,18 +60,19 @@ public class AdouApplication extends Application {
             // 初始化LiveSDK
             ILiveLog.setLogLevel(ILiveLog.TILVBLogLevel.DEBUG);
             ILiveSDK.getInstance().initSdk(this, 1400059239, 21019);
+            //初始化聊天message被观察者
             ILVLiveManager.getInstance().init(new ILVLiveConfig()
                     .setLiveMsgListener(MessageObservable.getInstance()));
 
             //初始化自定义资料信息
-            long type=CustomTimProfileInfo.ALL_BASE_INFO;
+            long type= CustomTimConstant.ALL_BASE_INFO;
             List<String> customFields=new ArrayList<>();
-//            customFields.add(CustomTimProfileInfo.INFO_FANS);
-//            customFields.add(CustomTimProfileInfo.INFO_FORK);
-            customFields.add(CustomTimProfileInfo.INFO_GRADE);
-            customFields.add(CustomTimProfileInfo.INFO_RECEIVE);
-            customFields.add(CustomTimProfileInfo.INFO_SEND);
-            customFields.add(CustomTimProfileInfo.INFO_XINGZUO);
+//            customFields.add(CustomTimConstant.INFO_FANS);
+//            customFields.add(CustomTimConstant.INFO_FORK);
+            customFields.add(CustomTimConstant.INFO_GRADE);
+            customFields.add(CustomTimConstant.INFO_RECEIVE);
+            customFields.add(CustomTimConstant.INFO_SEND);
+            customFields.add(CustomTimConstant.INFO_XINGZUO);
             TIMManager.getInstance().initFriendshipSettings(type, customFields);
         }
     }
