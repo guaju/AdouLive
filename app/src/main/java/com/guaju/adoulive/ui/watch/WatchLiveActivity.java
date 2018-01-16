@@ -226,7 +226,6 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         //腾讯云发送普通消息
     public void sendTextMsg(final String text){
         //通过对方id获取对方的等级和对方的昵称
-
         List<String> ids = new ArrayList<>();
         ids.add(hostId);
         TIMFriendshipManager.getInstance().getFriendsProfile(ids, new TIMValueCallBack<List<TIMUserProfile>>() {
@@ -234,7 +233,6 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
             public void onError(int i, String s) {
 
             }
-
             @Override
             public void onSuccess(List<TIMUserProfile> timUserProfiles) {
                 realSend(timUserProfiles,text);

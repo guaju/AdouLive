@@ -27,6 +27,8 @@ import java.util.List;
 public class AdouApplication extends Application {
    static  AdouApplication app;
    AdouTimUserProfile adouTimUserProfile;
+    private ILVLiveConfig ilvLiveConfig;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -61,8 +63,9 @@ public class AdouApplication extends Application {
             ILiveLog.setLogLevel(ILiveLog.TILVBLogLevel.DEBUG);
             ILiveSDK.getInstance().initSdk(this, 1400059239, 21019);
             //初始化聊天message被观察者
-            ILVLiveManager.getInstance().init(new ILVLiveConfig()
-                    .setLiveMsgListener(MessageObservable.getInstance()));
+            ilvLiveConfig = new ILVLiveConfig()
+                    .setLiveMsgListener(MessageObservable.getInstance());
+            ILVLiveManager.getInstance().init(ilvLiveConfig);
 
             //初始化自定义资料信息
             long type= CustomTimConstant.ALL_BASE_INFO;
@@ -90,5 +93,9 @@ public class AdouApplication extends Application {
         return  adouTimUserProfile;
     }
 
+    //获取在应用中初始化的直播配置信息
+    public ILVLiveConfig getIlvLiveConfig(){
+        return ilvLiveConfig;
+    }
 
 }

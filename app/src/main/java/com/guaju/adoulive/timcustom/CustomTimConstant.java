@@ -1,6 +1,7 @@
 package com.guaju.adoulive.timcustom;
 
 import com.tencent.TIMFriendshipManager;
+import com.tencent.livesdk.ILVLiveConstants;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +11,9 @@ import java.util.List;
  */
 
 public interface CustomTimConstant {
+    //定义了两个自定义消息的cmd int类型常量
+    int CUSTOM_ILIVE_CMD_TEXT= ILVLiveConstants.ILVLIVE_CMD_CUSTOM_LOW_LIMIT+1;
+    int CUSTOM_ILIVE_CMD_DANMU= ILVLiveConstants.ILVLIVE_CMD_CUSTOM_LOW_LIMIT+2;
     //前缀必须是这个
     String PREFIX="Tag_Profile_Custom_";
     String INFO_SEND = PREFIX+"Send";

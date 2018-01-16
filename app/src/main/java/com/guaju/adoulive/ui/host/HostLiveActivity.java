@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.app.AdouApplication;
 import com.guaju.adoulive.bean.TextMsgInfo;
-import com.guaju.adoulive.engine.MessageObservable;
 import com.guaju.adoulive.timcustom.CustomTimConstant;
 import com.guaju.adoulive.utils.ToastUtils;
 import com.guaju.adoulive.widget.BottomChatSwitchLayout;
@@ -24,6 +23,7 @@ import com.tencent.TIMMessage;
 import com.tencent.TIMUserProfile;
 import com.tencent.TIMValueCallBack;
 import com.tencent.ilivesdk.ILiveCallBack;
+import com.tencent.ilivesdk.core.ILiveRoomManager;
 import com.tencent.ilivesdk.view.AVRootView;
 import com.tencent.livesdk.ILVCustomCmd;
 import com.tencent.livesdk.ILVLiveConfig;
@@ -57,7 +57,9 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_live);
         //1.初始化消息的接受者
-        MessageObservable.getInstance().addObserver(this);
+//        MessageObservable.getInstance().addObserver(this);
+        AdouApplication.getApp().getIlvLiveConfig().setLiveMsgListener(this);
+
         initView();
         lmlv.setData(mList);
         setBottomSwitchListener();
@@ -97,10 +99,13 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             @Override
             public void sendMsg(String text) {
                 //主播给客户发消息
-                if (TextUtils.isEmpty(sendserId)){
-                    sendserId=AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
+                if (TextUtils.isEmpty(sendserId)) {
+                    sendserId = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
+//                    sendserId= ILiveRoomManager.getInstance().getIMGroupId();
                 }
-                sendTextMsg(text, sendserId);
+//                sendTextMsg(text, sendserId);
+                realSendCustomMsg(text);
+
             }
 
             @Override
@@ -254,6 +259,53 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
 
     }
 
+    //发送自定义的信息
+    public void realSendCustomMsg(String str) {
+
+//
+//        ILVCustomCmd cmd = new ILVCustomCmd();
+//        if (TIMConversationType.Group == msg.getConversation().getType()) {
+//            cmd.setType(ILVText.ILVTextType.eGroupMsg);
+//        } else {
+//            cmd.setType(ILVText.ILVTextType.eC2CMsg);
+//        }
+//        cmd.setDestId(msg.getConversation().getPeer());
+//        cmd.setCmd(action);
+//        cmd.setParam(param);
+        //创建自定义信息
+        final ILVCustomCmd ilvCustomCmd = new ILVCustomCmd();
+        //设置自定义信息的类型
+        ilvCustomCmd.setCmd(CustomTimConstant.CUSTOM_ILIVE_CMD_TEXT);
+        //设置目标id
+        String imGroupId = ILiveRoomManager.getInstance().getIMGroupId();
+        ilvCustomCmd.setDestId(imGroupId);
+        //自定义信息内容
+        ilvCustomCmd.setParam(str);
+
+
+        ILVLiveManager.getInstance().sendCustomCmd(ilvCustomCmd, new ILiveCallBack() {
+            @Override
+            public void onSuccess(Object data) {
+                String text = ilvCustomCmd.getParam();
+                String adouID = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
+                int grade = AdouApplication.getApp().getAdouTimUserProfile().getGrade();
+                String nickName = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getNickName();
+                TextMsgInfo info = new TextMsgInfo(grade,nickName,text,adouID);
+                //发送成功
+                lmlv.addMsg(info);
+
+            }
+
+            @Override
+            public void onError(String module, int errCode, String errMsg) {
+                //发送失败
+                ToastUtils.show("错误信息" + errMsg + "错误码" + errCode);
+            }
+        });
+
+    }
+
+
     //真正的发送消息
     private void realSend(List<TIMUserProfile> timUserProfiles, final String text) {
         //因为获取信息的时候 只传入了只有一个元素的集合，所以到这只能拿到一个用户的信息
@@ -264,8 +316,8 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             @Override
             public void onSuccess(Object data) {
                 String grade = null;
-                String adouId;
-                String nickname;
+                String adouId = null;
+                String nickname = null;
                 //发送成功之后，加入到listview中去
 
                 TextMsgInfo textMsgInfo = new TextMsgInfo();
@@ -278,28 +330,33 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
                     if (bytes != null) {
                         grade = new String(bytes);
                     }
-                    nickname =profile.getNickName();
+                    nickname = profile.getNickName();
 
                 }
-                if (TextUtils.isEmpty(grade)){
-                    grade="0";
+                if (TextUtils.isEmpty(grade)) {
+                    grade = "0";
                 }
+                //由于是主播发送信息
+//                    grade = AdouApplication.getApp().getAdouTimUserProfile().getGrade() + "";
+//                  adouId = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
+//                  nickname = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getNickName();
+//
 
-                    textMsgInfo.setGrade(Integer.parseInt(grade));
-                    textMsgInfo.setText(text);
-                    textMsgInfo.setNickname(TextUtils.isEmpty(nickname)?sendserId:nickname);
-                    textMsgInfo.setAdouID(sendserId);
-                    //更新列表
-                    lmlv.addMsg(textMsgInfo);
+                textMsgInfo.setGrade(Integer.parseInt(grade));
+                textMsgInfo.setText(text);
+                textMsgInfo.setNickname(TextUtils.isEmpty(nickname) ? sendserId : nickname);
+                textMsgInfo.setAdouID(adouId);
+                //更新列表
+                lmlv.addMsg(textMsgInfo);
 
 
-                }
+            }
 
-                @Override
-                public void onError (String module,int errCode, String errMsg){
-                    ToastUtils.show("发送失败，错误信息" + errMsg + "错误码" + errCode);
-                }
-            });
-        }
+            @Override
+            public void onError(String module, int errCode, String errMsg) {
+                ToastUtils.show("发送失败，错误信息" + errMsg + "错误码" + errCode);
+            }
+        });
     }
+}
 

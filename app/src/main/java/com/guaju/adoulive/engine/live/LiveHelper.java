@@ -3,6 +3,7 @@ package com.guaju.adoulive.engine.live;
 import android.content.Context;
 
 import com.guaju.adoulive.utils.ToastUtils;
+import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.ilivesdk.ILiveCallBack;
 import com.tencent.ilivesdk.ILiveConstants;
 import com.tencent.ilivesdk.core.ILiveLoginManager;
@@ -22,6 +23,7 @@ public class LiveHelper {
     Context mContext;
     static LiveHelper mLiveHelper;
     OkHttpClient mOkHttpClient;
+
 
     private LiveHelper(Context context) {
         this.mContext = context;
@@ -50,6 +52,8 @@ public class LiveHelper {
 //                .setRoomMemberStatusLisenter(this)
                 .videoMode(ILiveConstants.VIDEOMODE_NORMAL)
                 .controlRole(Constants.ROLE_MASTER)
+                .authBits(AVRoomMulti.AUTH_BITS_DEFAULT)//权限设置
+                .videoRecvMode(AVRoomMulti.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO)
                 .autoFocus(true);
         UserInfo.getInstance().setRoom(roomId);
         ILVLiveManager.getInstance().createRoom(UserInfo.getInstance().getRoom(),
