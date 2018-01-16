@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.guaju.adoulive.R;
+import com.guaju.adoulive.app.AdouApplication;
 import com.guaju.adoulive.bean.TextMsgInfo;
 import com.guaju.adoulive.engine.MessageObservable;
 import com.guaju.adoulive.engine.live.Constants;
@@ -14,6 +16,7 @@ import com.guaju.adoulive.timcustom.CustomTimConstant;
 import com.guaju.adoulive.utils.ToastUtils;
 import com.guaju.adoulive.widget.BottomChatSwitchLayout;
 import com.guaju.adoulive.widget.BottomSwitchLayout;
+import com.guaju.adoulive.widget.HeightSensenableRelativeLayout;
 import com.guaju.adoulive.widget.LiveMsgListView;
 import com.orhanobut.logger.Logger;
 import com.tencent.TIMFriendshipManager;
@@ -49,6 +52,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
     //创建集合专门存储消息
     private ArrayList<TextMsgInfo> mList=new ArrayList<TextMsgInfo>();
     private BottomChatSwitchLayout chatswitchlayout;
+    private HeightSensenableRelativeLayout hsrl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,20 +62,46 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         //初始化消息的接受者
         MessageObservable.getInstance().addObserver(this);
         initView();
+        //设置默认状态
+        setDefultStatus();
+
         lmlv.setData(mList);
         setListener();
         initRootView();
+
         //获取房间号，和主播号
         getinfoAndJoinRoom();
 
     }
 
+
+    private void setDefultStatus() {
+        chatswitchlayout.setVisibility(View.INVISIBLE);
+        bottomswitchlayout.setVisibility(View.VISIBLE);
+    }
+
     private void setListener() {
+        hsrl.setOnLayoutHeightChangedListenser(new HeightSensenableRelativeLayout.OnLayoutHeightChangedListenser() {
+            @Override
+            public void showNormal() {
+                setDefultStatus();
+            }
+
+            @Override
+            public void showChat() {
+                chatswitchlayout.setVisibility(View.VISIBLE);
+                bottomswitchlayout.setVisibility(View.INVISIBLE);
+            }
+        });
+
+
         bottomswitchlayout.setOnSwitchListener(new BottomSwitchLayout.OnSwitchListener() {
             @Override
             public void onChat() {
                 //聊天
-                ToastUtils.show("聊天");
+                chatswitchlayout.setVisibility(View.VISIBLE);
+                bottomswitchlayout.setVisibility(View.INVISIBLE);
+
             }
 
             @Override
@@ -85,7 +115,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
             @Override
             public void sendMsg(String text) {
                 //发送消息
-                sendTextMsg(text,hostId);
+                sendTextMsg(text);
             }
 
             @Override
@@ -113,6 +143,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         avRootView = findViewById(R.id.av_rootview);
         bottomswitchlayout = findViewById(R.id.bottomswitchlayout);
         chatswitchlayout = findViewById(R.id.chatswitchlayout);
+        hsrl = findViewById(R.id.hsrl);
         lmlv = findViewById(R.id.lmlv);
     }
 
@@ -193,11 +224,11 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
 
 
         //腾讯云发送普通消息
-    public void sendTextMsg(final String text, String destId){
+    public void sendTextMsg(final String text){
         //通过对方id获取对方的等级和对方的昵称
 
         List<String> ids = new ArrayList<>();
-        ids.add(destId);
+        ids.add(hostId);
         TIMFriendshipManager.getInstance().getFriendsProfile(ids, new TIMValueCallBack<List<TIMUserProfile>>() {
             @Override
             public void onError(int i, String s) {
@@ -209,12 +240,6 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                 realSend(timUserProfiles,text);
             }
         });
-
-
-
-
-
-
     }
     //真正的发送消息
     private void realSend(List<TIMUserProfile> timUserProfiles, final String text) {
@@ -234,6 +259,8 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                 }else{
                     grade="0";
                 }
+                String identifier = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
+                textMsgInfo.setAdouID(identifier);
                 textMsgInfo.setGrade(Integer.parseInt(grade));
                 textMsgInfo.setText(text);
                 textMsgInfo.setNickname(profile.getNickName());

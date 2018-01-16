@@ -120,6 +120,7 @@ public class LiveMsgListView extends ListView {
         //更新数据
         mList.add(msgInfo);
         msgAdapter.notifyDataSetChanged();
+        setSelection(mList.size());
 
 
     }

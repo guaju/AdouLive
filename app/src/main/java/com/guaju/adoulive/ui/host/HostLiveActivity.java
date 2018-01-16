@@ -56,7 +56,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_live);
-        //初始化消息的接受者
+        //1.初始化消息的接受者
         MessageObservable.getInstance().addObserver(this);
         initView();
         lmlv.setData(mList);
@@ -238,6 +238,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
 
         List<String> ids = new ArrayList<>();
         ids.add(destId);
+        //通过对方的id拿到朋友的信息
         TIMFriendshipManager.getInstance().getFriendsProfile(ids, new TIMValueCallBack<List<TIMUserProfile>>() {
             @Override
             public void onError(int i, String s) {
