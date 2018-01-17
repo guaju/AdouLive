@@ -29,4 +29,11 @@
         android:layout_height="150dp"
         android:layout_above="@id/bottomswitchlayout"
         />
+
+    <com.guaju.adoulive.widget.danmu.DanmuView
+        android:id="@+id/danmuview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/lmlv"
+        />
 </com.guaju.adoulive.widget.HeightSensenableRelativeLayout>

@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.app.AdouApplication;
+import com.guaju.adoulive.bean.DanmuMsgInfo;
 import com.guaju.adoulive.bean.TextMsgInfo;
 import com.guaju.adoulive.engine.MessageObservable;
 import com.guaju.adoulive.engine.live.Constants;
@@ -18,6 +19,7 @@ import com.guaju.adoulive.widget.BottomChatSwitchLayout;
 import com.guaju.adoulive.widget.BottomSwitchLayout;
 import com.guaju.adoulive.widget.HeightSensenableRelativeLayout;
 import com.guaju.adoulive.widget.LiveMsgListView;
+import com.guaju.adoulive.widget.danmu.DanmuView;
 import com.orhanobut.logger.Logger;
 import com.tencent.TIMFriendshipManager;
 import com.tencent.TIMMessage;
@@ -46,7 +48,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
     private int roomId;
     private String hostId;
     private BottomSwitchLayout bottomswitchlayout;
-
+    private DanmuView danmuView;
 
     private LiveMsgListView lmlv;
     //创建集合专门存储消息
@@ -115,12 +117,13 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
             @Override
             public void sendMsg(String text) {
                 //发送消息
-                sendTextMsg(text);
+                sendTextMsg(text,CustomTimConstant.TEXT_MSG);
             }
 
             @Override
             public void danmu(String text) {
-
+                String newText = CustomTimConstant.TYPE_DAN + text;
+                sendTextMsg(newText, CustomTimConstant.DANMU_MSG);
             }
         });
 
@@ -143,6 +146,8 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         avRootView = findViewById(R.id.av_rootview);
         bottomswitchlayout = findViewById(R.id.bottomswitchlayout);
         chatswitchlayout = findViewById(R.id.chatswitchlayout);
+
+        danmuView = findViewById(R.id.danmuview);
         hsrl = findViewById(R.id.hsrl);
         lmlv = findViewById(R.id.lmlv);
     }
@@ -224,7 +229,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
 
 
         //腾讯云发送普通消息
-    public void sendTextMsg(final String text){
+    public void sendTextMsg(final String text,final  int cmd){
         //通过对方id获取对方的等级和对方的昵称
 
         List<String> ids = new ArrayList<>();
@@ -237,12 +242,12 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
 
             @Override
             public void onSuccess(List<TIMUserProfile> timUserProfiles) {
-                realSend(timUserProfiles,text);
+                realSend(timUserProfiles,text,cmd);
             }
         });
     }
     //真正的发送消息
-    private void realSend(List<TIMUserProfile> timUserProfiles, final String text) {
+    private void realSend(List<TIMUserProfile> timUserProfiles, final String text,final int cmd) {
         //因为获取信息的时候 只传入了只有一个元素的集合，所以到这只能拿到一个用户的信息
         final TIMUserProfile profile = timUserProfiles.get(0);
 
@@ -265,6 +270,21 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                 textMsgInfo.setText(text);
                 textMsgInfo.setNickname(profile.getNickName());
                 //更新列表
+
+                if (cmd==CustomTimConstant.DANMU_MSG){
+                    //发弹幕
+                    String newMsg = text.substring(CustomTimConstant.TYPE_DAN.length(), text.length());
+                    String avatar = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getFaceUrl();
+                    DanmuMsgInfo danmuMsgInfo = new DanmuMsgInfo();
+                    danmuMsgInfo.setAdouID(hostId);
+                    danmuMsgInfo.setAvatar(avatar);
+                    danmuMsgInfo.setGrade(Integer.parseInt(grade));
+                    danmuMsgInfo.setText(newMsg);
+
+                    danmuView.addDanmu(danmuMsgInfo);
+                    textMsgInfo.setText(newMsg);
+                }
+
                 lmlv.addMsg(textMsgInfo);
 
 
@@ -280,6 +300,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
     @Override
     public void onNewTextMsg(ILVText text, String SenderId, TIMUserProfile userProfile) {
         //当接受到普通消息的时候，展示到listview上边去
+        TextMsgInfo textMsgInfo = new TextMsgInfo();
         String msg=text.getText();
         String nickName = userProfile.getNickName();
         String grade;
@@ -289,9 +310,26 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         }else{
             grade="0";
         }
-        TextMsgInfo textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, msg, SenderId);
-        lmlv.addMsg(textMsgInfo);
+        textMsgInfo.setAdouID(SenderId);
+        textMsgInfo.setGrade(Integer.parseInt(grade));
+        //需要判断发送的是否是弹幕
+        if (msg.startsWith(CustomTimConstant.TYPE_DAN)) {
+            //是弹幕
+            String newMsg = msg.substring(CustomTimConstant.TYPE_DAN.length(), msg.length());
+            textMsgInfo.setText(newMsg);
+            //发送弹幕
+            String avatar=userProfile.getFaceUrl();
+            DanmuMsgInfo danmuMsgInfo = new DanmuMsgInfo();
+            danmuMsgInfo.setText(newMsg);
+            danmuMsgInfo.setGrade(Integer.parseInt(grade));
+            danmuMsgInfo.setAvatar(avatar);
+            danmuMsgInfo.setAdouID(SenderId);
+            danmuView.addDanmu(danmuMsgInfo);
 
+        } else {
+            textMsgInfo.setText(msg);
+        }
+        lmlv.addMsg(textMsgInfo);
     }
 
     @Override

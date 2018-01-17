@@ -17,6 +17,7 @@ android {
         }
     }
     buildToolsVersion '27.0.0'
+    sourceSets { main { res.srcDirs = ['src/main/res', 'src/main/res/anim'] } }
 }
 
 dependencies {

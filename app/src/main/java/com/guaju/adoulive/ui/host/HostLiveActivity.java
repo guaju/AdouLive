@@ -11,14 +11,16 @@ import android.widget.ImageView;
 
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.app.AdouApplication;
+import com.guaju.adoulive.bean.DanmuMsgInfo;
 import com.guaju.adoulive.bean.TextMsgInfo;
 import com.guaju.adoulive.engine.MessageObservable;
 import com.guaju.adoulive.timcustom.CustomTimConstant;
 import com.guaju.adoulive.utils.ToastUtils;
 import com.guaju.adoulive.widget.BottomChatSwitchLayout;
 import com.guaju.adoulive.widget.BottomSwitchLayout;
-import com.guaju.adoulive.widget.HeightSensenableConstrantLayout;
+import com.guaju.adoulive.widget.HeightSensenableRelativeLayout;
 import com.guaju.adoulive.widget.LiveMsgListView;
+import com.guaju.adoulive.widget.danmu.DanmuView;
 import com.tencent.TIMFriendshipManager;
 import com.tencent.TIMMessage;
 import com.tencent.TIMUserProfile;
@@ -46,11 +48,13 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     private Toolbar toolbar;
     private int roomId;
     private BottomChatSwitchLayout chatswitchlayout;
-    private HeightSensenableConstrantLayout heightscl;
+    private HeightSensenableRelativeLayout heightscl;
     private String sendserId;//接受到的信息发送者id
     private LiveMsgListView lmlv;
     //创建集合专门存储消息
     private ArrayList<TextMsgInfo> mList = new ArrayList<TextMsgInfo>();
+    private DanmuView danmuView;
+    private TextMsgInfo textMsgInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,7 +83,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
 
     private void initListener() {
         //设置父容器的高度变化监听
-        heightscl.setOnLayoutHeightChangedListenser(new HeightSensenableConstrantLayout.OnLayoutHeightChangedListenser() {
+        heightscl.setOnLayoutHeightChangedListenser(new HeightSensenableRelativeLayout.OnLayoutHeightChangedListenser() {
             @Override
             public void showNormal() {
                 setDefultStatus();
@@ -97,15 +101,22 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             @Override
             public void sendMsg(String text) {
                 //主播给客户发消息
-                if (TextUtils.isEmpty(sendserId)){
-                    sendserId=AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
+                if (TextUtils.isEmpty(sendserId)) {
+                    sendserId = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
                 }
-                sendTextMsg(text, sendserId);
+                //做唯一表示
+                //String newText=CustomTimConstant.TYPE_MSG+text;
+                sendTextMsg(text, sendserId, CustomTimConstant.TEXT_MSG);
             }
 
             @Override
             public void danmu(String text) {
-
+                //主播给客户发消息
+                if (TextUtils.isEmpty(sendserId)) {
+                    sendserId = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
+                }
+                String newText = CustomTimConstant.TYPE_DAN + text;
+                sendTextMsg(newText, sendserId, CustomTimConstant.DANMU_MSG);
             }
         });
     }
@@ -144,7 +155,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
         chatswitchlayout = findViewById(R.id.chatswitchlayout);
         //初始化listview
         lmlv = findViewById(R.id.lmlv);
-
+        danmuView = findViewById(R.id.danmuview);
         //将avrootview添加
         ILVLiveManager.getInstance().setAvVideoView(avRootView);
     }
@@ -215,8 +226,26 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
         } else {
             grade = "0";
         }
-        TextMsgInfo textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, msg, SenderId);
+
+        //需要判断发送的是否是弹幕
+        if (msg.startsWith(CustomTimConstant.TYPE_DAN)) {
+            //是弹幕
+            String newMsg = msg.substring(CustomTimConstant.TYPE_DAN.length(), msg.length());
+            textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, newMsg, SenderId);
+            //发送弹幕
+            String avatar = userProfile.getFaceUrl();
+            DanmuMsgInfo danmuMsgInfo = new DanmuMsgInfo();
+            danmuMsgInfo.setText(newMsg);
+            danmuMsgInfo.setGrade(Integer.parseInt(grade));
+            danmuMsgInfo.setAvatar(avatar);
+            danmuMsgInfo.setAdouID(SenderId);
+            danmuView.addDanmu(danmuMsgInfo);
+
+        } else {
+            textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, msg, SenderId);
+        }
         lmlv.addMsg(textMsgInfo);
+
 
     }
 
@@ -233,7 +262,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     }
 
     //腾讯云发送普通消息
-    public void sendTextMsg(final String text, String destId) {
+    public void sendTextMsg(final String text, String destId, final int cmd) {
         //通过对方id获取对方的等级和对方的昵称
 
         List<String> ids = new ArrayList<>();
@@ -247,7 +276,9 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
 
             @Override
             public void onSuccess(List<TIMUserProfile> timUserProfiles) {
-                realSend(timUserProfiles, text);
+
+                realSend(timUserProfiles, text, cmd);
+
             }
         });
 
@@ -255,7 +286,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     }
 
     //真正的发送消息
-    private void realSend(List<TIMUserProfile> timUserProfiles, final String text) {
+    private void realSend(List<TIMUserProfile> timUserProfiles, final String text, final int cmd) {
         //因为获取信息的时候 只传入了只有一个元素的集合，所以到这只能拿到一个用户的信息
         final TIMUserProfile profile = timUserProfiles.get(0);
 
@@ -278,28 +309,43 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
                     if (bytes != null) {
                         grade = new String(bytes);
                     }
-                    nickname =profile.getNickName();
+                    nickname = profile.getNickName();
 
                 }
-                if (TextUtils.isEmpty(grade)){
-                    grade="0";
+                if (TextUtils.isEmpty(grade)) {
+                    grade = "0";
                 }
-
-                    textMsgInfo.setGrade(Integer.parseInt(grade));
-                    textMsgInfo.setText(text);
-                    textMsgInfo.setNickname(TextUtils.isEmpty(nickname)?sendserId:nickname);
-                    textMsgInfo.setAdouID(sendserId);
-                    //更新列表
-                    lmlv.addMsg(textMsgInfo);
+                adouId = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getIdentifier();
+                textMsgInfo.setGrade(Integer.parseInt(grade));
+                textMsgInfo.setText(text);
+                textMsgInfo.setNickname(TextUtils.isEmpty(nickname) ? sendserId : nickname);
+                textMsgInfo.setAdouID(adouId);
 
 
+                //成功的时候怎么办 ，如果是弹幕的话就执行弹幕，如果不是弹幕 就不执行
+                if (cmd == CustomTimConstant.DANMU_MSG) {
+                    //TODO
+                    String newMsg = text.substring(CustomTimConstant.TYPE_DAN.length(), text.length());
+                    String avatar = AdouApplication.getApp().getAdouTimUserProfile().getProfile().getFaceUrl();
+                    DanmuMsgInfo danmuMsgInfo = new DanmuMsgInfo();
+                    danmuMsgInfo.setAdouID(adouId);
+                    danmuMsgInfo.setAvatar(avatar);
+                    danmuMsgInfo.setGrade(Integer.parseInt(grade));
+                    danmuMsgInfo.setText(newMsg);
+
+                    danmuView.addDanmu(danmuMsgInfo);
+                    textMsgInfo.setText(newMsg);
                 }
+                //更新列表
+                lmlv.addMsg(textMsgInfo);
 
-                @Override
-                public void onError (String module,int errCode, String errMsg){
-                    ToastUtils.show("发送失败，错误信息" + errMsg + "错误码" + errCode);
-                }
-            });
-        }
+            }
+
+            @Override
+            public void onError(String module, int errCode, String errMsg) {
+                ToastUtils.show("发送失败，错误信息" + errMsg + "错误码" + errCode);
+            }
+        });
     }
+}
 

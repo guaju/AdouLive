@@ -39,6 +39,12 @@
             ></activity>
         <activity android:name=".ui.watch.WatchLiveActivity"
             android:screenOrientation="portrait"></activity>
+
+        <activity android:name=".AnimationTest"
+            android:screenOrientation="portrait"
+            >
+
+        </activity>
     </application>
 
 </manifest>

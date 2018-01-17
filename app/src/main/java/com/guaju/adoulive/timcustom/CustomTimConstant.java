@@ -10,6 +10,10 @@ import java.util.List;
  */
 
 public interface CustomTimConstant {
+    //校验是普通信息还是弹幕
+    String TYPE_MSG="M-+s=+-G";
+    String TYPE_DAN="D-+a=+-N";
+
     //前缀必须是这个
     String PREFIX="Tag_Profile_Custom_";
     String INFO_SEND = PREFIX+"Send";
@@ -33,4 +37,6 @@ public interface CustomTimConstant {
             |TIMFriendshipManager.TIM_PROFILE_FLAG_GROUP;
 
 
+    int TEXT_MSG = 0x801;
+    int DANMU_MSG=0x802;
 }
