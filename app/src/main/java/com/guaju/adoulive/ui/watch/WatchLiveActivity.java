@@ -17,6 +17,7 @@ import com.guaju.adoulive.timcustom.CustomTimConstant;
 import com.guaju.adoulive.utils.ToastUtils;
 import com.guaju.adoulive.widget.BottomChatSwitchLayout;
 import com.guaju.adoulive.widget.BottomSwitchLayout;
+import com.guaju.adoulive.widget.GiftSendDialog;
 import com.guaju.adoulive.widget.HeightSensenableRelativeLayout;
 import com.guaju.adoulive.widget.LiveMsgListView;
 import com.guaju.adoulive.widget.danmu.DanmuView;
@@ -111,6 +112,14 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                 //关闭时
                 finish();
             }
+
+            @Override
+            public void onGift() {
+                //弹出dialog
+
+                GiftSendDialog giftSendDialog = new GiftSendDialog(WatchLiveActivity.this,R.style.custom_dialog);
+                giftSendDialog.show();
+            }
         });
         chatswitchlayout.setOnMsgSendListener(new BottomChatSwitchLayout.OnMsgSendListener() {
 
@@ -146,7 +155,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         avRootView = findViewById(R.id.av_rootview);
         bottomswitchlayout = findViewById(R.id.bottomswitchlayout);
         chatswitchlayout = findViewById(R.id.chatswitchlayout);
-
+        bottomswitchlayout.iv_switch_gift.setVisibility(View.VISIBLE);
         danmuView = findViewById(R.id.danmuview);
         hsrl = findViewById(R.id.hsrl);
         lmlv = findViewById(R.id.lmlv);

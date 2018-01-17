@@ -19,6 +19,7 @@ public class BottomSwitchLayout extends FrameLayout implements View.OnClickListe
     LayoutInflater inflater;
     private ImageView iv_switch_chat;
     private ImageView iv_switch_close;
+    public ImageView iv_switch_gift;
     OnSwitchListener mListener;
 
 
@@ -38,8 +39,10 @@ public class BottomSwitchLayout extends FrameLayout implements View.OnClickListe
         //导入布局
         View v = inflater.inflate(R.layout.bottom_chat_or_close, this, true);
         iv_switch_chat = v.findViewById(R.id.iv_switch_chat);
+        iv_switch_gift = v.findViewById(R.id.iv_switch_gift);
         iv_switch_close = v.findViewById(R.id.iv_switch_close);
         iv_switch_chat.setOnClickListener(this);
+        iv_switch_gift.setOnClickListener(this);
         iv_switch_close.setOnClickListener(this);
 
     }
@@ -59,6 +62,13 @@ public class BottomSwitchLayout extends FrameLayout implements View.OnClickListe
                     mListener.onClose();
                 }
                 break;
+            case R.id.iv_switch_gift:
+                //掉起发送礼物的dialog
+                if (mListener!=null){
+                    mListener.onGift();
+                }
+
+                break;
             default:
                 break;
         }
@@ -71,5 +81,7 @@ public class BottomSwitchLayout extends FrameLayout implements View.OnClickListe
     public interface OnSwitchListener{
         void onChat();
         void onClose();
+        //发送礼物
+        void onGift();
     }
 }

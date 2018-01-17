@@ -23,4 +23,7 @@
     <color name="yellow">#fcf635</color>
     <color name="alphawhite">#4fff</color>
     <color name="blue">#4b9ce8</color>
+    <color name="light_blue">#49e7ec</color>
+    <color name="gold">#f7a204</color>
+    <color name="alpha_gray">#9666</color>
 </resources>

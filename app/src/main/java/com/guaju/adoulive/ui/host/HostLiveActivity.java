@@ -152,6 +152,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
         toolbar = findViewById(R.id.toolbar);
         avRootView = findViewById(R.id.arv_root);
         bottomswitchlayout = findViewById(R.id.bottomswitchlayout);
+        bottomswitchlayout.iv_switch_gift.setVisibility(View.INVISIBLE);
         chatswitchlayout = findViewById(R.id.chatswitchlayout);
         //初始化listview
         lmlv = findViewById(R.id.lmlv);
@@ -207,6 +208,11 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             public void onClose() {
                 //关闭时
                 finish();
+            }
+
+            @Override
+            public void onGift() {
+
             }
         });
 

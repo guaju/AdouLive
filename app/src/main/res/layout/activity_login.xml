@@ -33,7 +33,7 @@
             android:layout_height="40dp"
             android:background="@null"
             android:hint="请输入用户名"
-            android:text="xiaoming"
+            android:text="xiaohonghong"
             android:textSize="18sp"
             />
 
