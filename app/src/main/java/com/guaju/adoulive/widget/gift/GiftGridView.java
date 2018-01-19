@@ -21,31 +21,33 @@ import java.util.ArrayList;
  */
 
 public class GiftGridView extends GridView {
+    //用来装载数据的集合
     ArrayList<Gift> giftLists = new ArrayList<>();
 
     LayoutInflater inflater;
     private GiftGridAdapter giftGridAdapter;
 
-    public GiftGridView(Context context) {
+    SetGiftDefault mSetGiftDefault;
+
+    //在java代码中创建使用的构造方法
+    public GiftGridView(Context context, SetGiftDefault giftDefault) {
         super(context);
         inflater = LayoutInflater.from(context);
+        mSetGiftDefault = giftDefault;
         init();
     }
-
 
 
     private void init() {
         //设置gridview的属性
         setNumColumns(4); //设置有四列
-        
-
 //        setGiftData();
         giftGridAdapter = new GiftGridAdapter();
         setAdapter(giftGridAdapter);
 
     }
 
-
+    //在布局中使用时 自动调用的构造方法
     public GiftGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflater = LayoutInflater.from(context);
@@ -59,9 +61,8 @@ public class GiftGridView extends GridView {
         giftLists.clear();
         //再赋值
         giftLists = gifts;
+        //更新数据
         giftGridAdapter.notifyDataSetChanged();
-
-
     }
 
 
@@ -92,7 +93,22 @@ public class GiftGridView extends GridView {
                 convertView.setTag(viewHolder);
             }
             viewHolder = (ViewHolder) convertView.getTag();
-            viewHolder.bindData(giftLists.get(pos));
+            final Gift gift = giftLists.get(pos);
+            //设置gridview item点击事件
+            convertView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //设置选中礼物
+                    if (gift.isSelected()) {
+                        gift.setSelected(false);
+                    } else {
+                        //让其他礼物不选中
+                        mSetGiftDefault.setOnSelected(gift);
+                    }
+
+                }
+            });
+            viewHolder.bindData(gift);
 
 
             return convertView;
@@ -123,7 +139,8 @@ public class GiftGridView extends GridView {
                     if (!TextUtils.isEmpty(gift.getName())) {
                         tv_gift_name.setText(gift.getName());
                     }
-                    tv_gift_price.setText(gift.getPrice()+"斗币");
+                    //因为价格是int类型
+                    tv_gift_price.setText(gift.getPrice() + "斗币");
                     if (gift.isSelected()) {
                         iv_select.setBackgroundResource(R.mipmap.right);
                     } else {
@@ -134,6 +151,23 @@ public class GiftGridView extends GridView {
             }
 
 
+        }
+    }
+
+    //让所有礼物不选中
+    public interface SetGiftDefault {
+        void setOnSelected(Gift gift);
+    }
+    //设置某一个礼物选中
+    public void setGiftSelected(Gift gift) {
+        for (Gift g : giftLists) {
+            if (g.getGiftId() == gift.getGiftId()) {
+                g.setSelected(true);
+                //刷新数据
+            } else {
+                g.setSelected(false);
+            }
+            giftGridAdapter.notifyDataSetChanged();
         }
     }
 

@@ -1,4 +1,4 @@
-package com.guaju.adoulive.widget;
+package com.guaju.adoulive.widget.gift;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.bean.Gift;
-import com.guaju.adoulive.widget.gift.GiftGridView;
 
 import java.util.ArrayList;
 
@@ -30,12 +29,15 @@ import java.util.ArrayList;
 
 public class GiftSendDialog implements View.OnClickListener {
     //gridview集合
-    ArrayList<GiftGridView> gridViewLists=new ArrayList<>();
-    ArrayList<Gift> allGifts=new ArrayList<>();
+    ArrayList<GiftGridView> gridViewLists = new ArrayList<>();
+    ArrayList<Gift> allGifts = new ArrayList<>();
 
     private TextView tv_photo;
     private TextView tv_camera;
     private LinearLayout ll_cancel;
+    //定义选中的礼物
+    Gift  selectedGift;
+
 
 
     Activity activity;
@@ -50,6 +52,12 @@ public class GiftSendDialog implements View.OnClickListener {
     private ImageView iv_indicator0;
     private ImageView iv_indicator1;
     private Button bt_send_gift;
+    private ArrayList<Gift> gifts0;
+    private ArrayList<Gift> gifts1;
+    private GiftGridView.SetGiftDefault setGiftDefault;
+    private GiftGridView giftGridView0;
+    private GiftGridView giftGridView1;
+    private GiftViewPageAdapter giftViewPageAdapter;
 
     public GiftSendDialog(@NonNull Activity activity) {
         this.activity = activity;
@@ -67,10 +75,10 @@ public class GiftSendDialog implements View.OnClickListener {
 
             @Override
             public void onPageSelected(int position) {
-                if (0==position){
+                if (0 == position) {
                     iv_indicator0.setBackgroundResource(R.mipmap.indicator_selected);
                     iv_indicator1.setBackgroundResource(R.mipmap.indicator_normal);
-                } else if (1==position){
+                } else if (1 == position) {
                     iv_indicator0.setBackgroundResource(R.mipmap.indicator_normal);
                     iv_indicator1.setBackgroundResource(R.mipmap.indicator_selected);
                 }
@@ -97,8 +105,9 @@ public class GiftSendDialog implements View.OnClickListener {
     }
 
     private void init() {
+        //把礼物数据填入
         initAllGift();
-        
+
         wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
         display = wm.getDefaultDisplay();
         inflater = LayoutInflater.from(activity);
@@ -113,7 +122,6 @@ public class GiftSendDialog implements View.OnClickListener {
         initGridView();
 
 
-
         dialog.setContentView(v);
         //通过window设置dialog的宽高和位置
         Window window = dialog.getWindow();
@@ -125,24 +133,37 @@ public class GiftSendDialog implements View.OnClickListener {
     }
 
     private void initGridView() {
+        //初始化gridview item点击事件接口
+        setGiftDefault = new GiftGridView.SetGiftDefault() {
+            @Override
+            public void setOnSelected(Gift gift) {
+                //设置选中的礼物是这个gift
+                selectedGift=gift;
+                giftGridView0.setGiftSelected(gift);
+                giftGridView1.setGiftSelected(gift);
+            }
+        };
+
         //准备viewpager中的两个gridview
-        ArrayList<Gift> gifts0 =new ArrayList<>();
-        ArrayList<Gift> gifts1 =new ArrayList<>();
-        int startIndex=0;
-        int  endIndex=8;
+        gifts0 = new ArrayList<>();
+        gifts1 = new ArrayList<>();
+        int startIndex = 0;
+        int endIndex = 8;
         //将大集合分成两个集合
         gifts0.addAll(allGifts.subList(startIndex, endIndex));
         gifts1.addAll(allGifts.subList(endIndex, allGifts.size()));
-        GiftGridView giftGridView0 = new GiftGridView(activity);
+        giftGridView0 = new GiftGridView(activity, setGiftDefault);
+        //给第一个gridview设置适配器
         giftGridView0.setGiftData(gifts0);
 
-        GiftGridView giftGridView1 = new GiftGridView(activity);
+        giftGridView1 = new GiftGridView(activity, setGiftDefault);
+        //给第二个gridview设置适配器
         giftGridView1.setGiftData(gifts1);
-
+        //这个集合是给viewpager设置gridview view的
         gridViewLists.add(giftGridView0);
         gridViewLists.add(giftGridView1);
         //创建viewpager适配器
-        GiftViewPageAdapter giftViewPageAdapter = new GiftViewPageAdapter();
+        giftViewPageAdapter = new GiftViewPageAdapter();
         vp_gift_send.setAdapter(giftViewPageAdapter);
 
     }
@@ -171,6 +192,7 @@ public class GiftSendDialog implements View.OnClickListener {
         //把dialog实例化
         dialog = new Dialog(activity, themeResId);
         init();
+        initListener();
     }
 
     @Override
@@ -190,7 +212,7 @@ public class GiftSendDialog implements View.OnClickListener {
     }
 
 
-    class GiftViewPageAdapter extends PagerAdapter{
+    class GiftViewPageAdapter extends PagerAdapter {
 
         @Override
         public int getCount() {
@@ -199,17 +221,17 @@ public class GiftSendDialog implements View.OnClickListener {
 
         @Override
         public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-            return view==object;
+            return view == object;
         }
 
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             GiftGridView giftGridView = gridViewLists.get(position);
-            if (giftGridView.getParent()==null){
+            if (giftGridView.getParent() == null) {
                 container.addView(giftGridView);
             }
-            return  giftGridView;
+            return giftGridView;
         }
 
         @Override
@@ -218,4 +240,10 @@ public class GiftSendDialog implements View.OnClickListener {
             container.removeView(gridViewLists.get(position));
         }
     }
+
+
+
+
+
 }
+
