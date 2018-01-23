@@ -101,9 +101,13 @@ public class GiftGridView extends GridView {
                     //设置选中礼物
                     if (gift.isSelected()) {
                         gift.setSelected(false);
+                        mSetGiftDefault.onUnSelected(gift);
+                        //因为反选是当前gridview的事情，所以只需要在自己里面处理即可
+                        giftGridAdapter.notifyDataSetChanged();
+
                     } else {
-                        //让其他礼物不选中
-                        mSetGiftDefault.setOnSelected(gift);
+                        //如果当前礼物没有选中，就让调用者去处理
+                        mSetGiftDefault.onSelected(gift);
                     }
 
                 }
@@ -156,9 +160,12 @@ public class GiftGridView extends GridView {
 
     //让所有礼物不选中
     public interface SetGiftDefault {
-        void setOnSelected(Gift gift);
+        //当未选中礼物被选中的时候
+        void onSelected(Gift gift);
+        //当选中礼物再次点击即取消选择的时候
+        void onUnSelected(Gift gift);
     }
-    //设置某一个礼物选中
+    //设置某一个礼物选中，这样其余礼物都置为反选
     public void setGiftSelected(Gift gift) {
         for (Gift g : giftLists) {
             if (g.getGiftId() == gift.getGiftId()) {

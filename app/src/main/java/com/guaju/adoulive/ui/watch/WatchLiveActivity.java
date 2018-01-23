@@ -3,12 +3,16 @@ package com.guaju.adoulive.ui.watch;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.app.AdouApplication;
 import com.guaju.adoulive.bean.DanmuMsgInfo;
+import com.guaju.adoulive.bean.Gift;
+import com.guaju.adoulive.bean.GiftMsgInfo;
 import com.guaju.adoulive.bean.TextMsgInfo;
 import com.guaju.adoulive.engine.MessageObservable;
 import com.guaju.adoulive.engine.live.Constants;
@@ -17,10 +21,12 @@ import com.guaju.adoulive.timcustom.CustomTimConstant;
 import com.guaju.adoulive.utils.ToastUtils;
 import com.guaju.adoulive.widget.BottomChatSwitchLayout;
 import com.guaju.adoulive.widget.BottomSwitchLayout;
-import com.guaju.adoulive.widget.gift.GiftSendDialog;
 import com.guaju.adoulive.widget.HeightSensenableRelativeLayout;
 import com.guaju.adoulive.widget.LiveMsgListView;
 import com.guaju.adoulive.widget.danmu.DanmuView;
+import com.guaju.adoulive.widget.gift.GiftItem;
+import com.guaju.adoulive.widget.gift.GiftSendDialog;
+import com.guaju.adoulive.widget.gift.GiftView;
 import com.orhanobut.logger.Logger;
 import com.tencent.TIMFriendshipManager;
 import com.tencent.TIMMessage;
@@ -44,18 +50,84 @@ import java.util.List;
 
 
 public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLiveMsgListener {
+    private static final int FIRST_GIFT_SEND_FLAG = -1;
+    public static final int REPEAT_GIFT_SEND_FLAG =1 ;
+    //倒计时时间范围
+    private int repeatTimeLimit=10;
+    private GiftSendDialog giftSendDialog;
+    long firstSendTimeMillion;
+    GiftItem availableDanmuItem;
+
+    Handler repeatGiftTimer=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case FIRST_GIFT_SEND_FLAG:
+                    if (repeatTimeLimit>0){
+                        repeatTimeLimit--;//开始倒数
+                        sendEmptyMessageDelayed(FIRST_GIFT_SEND_FLAG,80);
+//                        bt.setText("发送（"+repeatTimeLimit+")");
+                        giftSendDialog.setSendButtonText("发送（"+repeatTimeLimit+")");
+                        //用户现在可以连发
+                    }else{
+                        //倒计时已经数完了，可以重新再开始
+                        availableDanmuItem.setIsRepeat(false);
+                        firstSendTimeMillion=0;
+                        repeatTimeLimit=10;
+//                        bt.setText("发送");
+                        giftSendDialog.setSendButtonText("发送");
+                        //用户不能再连发了
+                    }
+
+                    break;
+
+                case REPEAT_GIFT_SEND_FLAG:
+                    //停止第一个事件 的处理
+
+
+                    if (repeatTimeLimit>0){
+                        repeatTimeLimit--;//开始倒数
+                        sendEmptyMessageDelayed(REPEAT_GIFT_SEND_FLAG,80);
+//                        bt.setText("发送（"+repeatTimeLimit+")");
+                        giftSendDialog.setSendButtonText("发送（"+repeatTimeLimit+")");
+
+                        //用户现在可以连发
+                    }else{
+                        //倒计时已经数完了，可以重新再开始
+                        availableDanmuItem.setIsRepeat(false);
+                        availableDanmuItem.repeatSendWithoutAddNum();
+                        firstSendTimeMillion=0;
+                        repeatTimeLimit=10;
+//                        bt.setText("发送");
+                        giftSendDialog.setSendButtonText("发送");
+                        //用户不能再连发了
+                    }
+
+
+                    break;
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
+
+
+
+        }
+    };
 
     private AVRootView avRootView;
     private int roomId;
     private String hostId;
     private BottomSwitchLayout bottomswitchlayout;
     private DanmuView danmuView;
+    private Gift mselectedGift;
 
     private LiveMsgListView lmlv;
     //创建集合专门存储消息
     private ArrayList<TextMsgInfo> mList=new ArrayList<TextMsgInfo>();
     private BottomChatSwitchLayout chatswitchlayout;
     private HeightSensenableRelativeLayout hsrl;
+    private GiftView giftView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -115,9 +187,24 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
 
             @Override
             public void onGift() {
-                //弹出dialog
+                GiftSendDialog.OnGiftSendListener onGiftSendListener = new GiftSendDialog.OnGiftSendListener() {
 
-                GiftSendDialog giftSendDialog = new GiftSendDialog(WatchLiveActivity.this,R.style.custom_dialog);
+
+
+                    @Override
+                    public void onSend(Gift selectedGift) {
+                        mselectedGift = selectedGift;
+                        //做发送按钮的处理，发送自定义消息，因为观众需要给主播发消息，让主播看见
+                        //消息内容
+                        String text=CustomTimConstant.TYPE_GIFT+"送了一个"+selectedGift.getName();
+                        sendTextMsg(text,CustomTimConstant.GIFT_MSG);
+
+                    }
+                };
+
+
+                //弹出dialog
+                giftSendDialog = new GiftSendDialog(WatchLiveActivity.this,R.style.custom_dialog,onGiftSendListener);
                 giftSendDialog.show();
             }
         });
@@ -157,6 +244,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         chatswitchlayout = findViewById(R.id.chatswitchlayout);
         bottomswitchlayout.iv_switch_gift.setVisibility(View.VISIBLE);
         danmuView = findViewById(R.id.danmuview);
+        giftView = findViewById(R.id.giftview);
         hsrl = findViewById(R.id.hsrl);
         lmlv = findViewById(R.id.lmlv);
     }
@@ -293,6 +381,24 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                     danmuView.addDanmu(danmuMsgInfo);
                     textMsgInfo.setText(newMsg);
                 }
+                if (cmd==CustomTimConstant.GIFT_MSG){
+                    //观众发送礼物
+                    final GiftMsgInfo giftMsgInfo = new GiftMsgInfo();
+                    giftMsgInfo.setGift(mselectedGift);
+                    //设置给礼物的view
+                    giftView.addGift(giftMsgInfo, new GiftView.OnGiftViewAvaliable() {
+                        @Override
+                        public void onAviable(GiftItem giftItem) {
+                            availableDanmuItem= giftItem;
+                            availableDanmuItem.bindData(giftMsgInfo);
+                        }
+                    });
+
+
+
+
+
+                }
 
                 lmlv.addMsg(textMsgInfo);
 
@@ -349,6 +455,30 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
     @Override
     public void onNewOtherMsg(TIMMessage message) {
 
+    }
+
+    //考虑到联机的发送礼物
+    public void sendGift(){
+        //在第一次点的时候开始计时
+        if (firstSendTimeMillion==0){
+            //第一次点击不是连发，设置给giftitem
+            availableDanmuItem.setIsRepeat(false);
+            //拿到第一次点的时间
+            firstSendTimeMillion=System.currentTimeMillis();
+            repeatGiftTimer.sendEmptyMessage(FIRST_GIFT_SEND_FLAG);
+            //再执行动画
+            availableDanmuItem.startAnimate();
+        }
+        else{//如果属于连击的话,需要把倒计时再从10开始倒数，并且增加礼物数
+            //属于连发
+            availableDanmuItem.setIsRepeat(true);
+            availableDanmuItem.repeatSend();//连发操作
+            //清空两个handler的处理
+            repeatGiftTimer.removeMessages(FIRST_GIFT_SEND_FLAG);
+            repeatGiftTimer.removeMessages(REPEAT_GIFT_SEND_FLAG);
+            repeatGiftTimer.sendEmptyMessage(REPEAT_GIFT_SEND_FLAG);
+            repeatTimeLimit=10;
+        }
     }
 
 }

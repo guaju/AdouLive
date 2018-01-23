@@ -13,6 +13,8 @@ public interface CustomTimConstant {
     //校验是普通信息还是弹幕
     String TYPE_MSG="M-+s=+-G";
     String TYPE_DAN="D-+a=+-N";
+    String TYPE_GIFT="G-+if=+-T";
+
 
     //前缀必须是这个
     String PREFIX="Tag_Profile_Custom_";
@@ -39,4 +41,5 @@ public interface CustomTimConstant {
 
     int TEXT_MSG = 0x801;
     int DANMU_MSG=0x802;
+    int GIFT_MSG=0x803;
 }

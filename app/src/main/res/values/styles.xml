@@ -20,11 +20,11 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
     <style name="custom_dialog" parent="@android:style/Theme.DeviceDefault.Dialog">
-        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowNoTitle">true</item>  <!--设置dialog的顶部边框是否可见，如果自定义布局的话都是要加的-->
         <!--<item name="android:windowIsTranslucent">true</item>-->
-        <!--<item name="android:windowFrame">@null</item>-->
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@color/alpha_gray</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsTranslucent">true</item> <!-- 设置dialog是否透明 -->
+        <item name="android:windowBackground">@color/alpha_gray</item>  <!--设置dialog背景  -->
         <item name="android:backgroundDimEnabled">false</item><!--activity不变暗-->
 
 
