@@ -56,7 +56,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
     private int repeatTimeLimit=10;
     private GiftSendDialog giftSendDialog;
     long firstSendTimeMillion;
-    GiftItem availableDanmuItem;
+    GiftItem availableGiftItem;
 
     Handler repeatGiftTimer=new Handler(){
         @Override
@@ -71,7 +71,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                         //用户现在可以连发
                     }else{
                         //倒计时已经数完了，可以重新再开始
-                        availableDanmuItem.setIsRepeat(false);
+                        availableGiftItem.setIsRepeat(false);
                         firstSendTimeMillion=0;
                         repeatTimeLimit=10;
 //                        bt.setText("发送");
@@ -94,8 +94,8 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                         //用户现在可以连发
                     }else{
                         //倒计时已经数完了，可以重新再开始
-                        availableDanmuItem.setIsRepeat(false);
-                        availableDanmuItem.repeatSendWithoutAddNum();
+                        availableGiftItem.setIsRepeat(false);
+                        availableGiftItem.repeatSendWithoutAddNum();
                         firstSendTimeMillion=0;
                         repeatTimeLimit=10;
 //                        bt.setText("发送");
@@ -187,16 +187,22 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
 
             @Override
             public void onGift() {
+                //发送按钮的回调
                 GiftSendDialog.OnGiftSendListener onGiftSendListener = new GiftSendDialog.OnGiftSendListener() {
-
-
-
                     @Override
                     public void onSend(Gift selectedGift) {
+                        //先得到选中的礼物
                         mselectedGift = selectedGift;
                         //做发送按钮的处理，发送自定义消息，因为观众需要给主播发消息，让主播看见
                         //消息内容
                         String text=CustomTimConstant.TYPE_GIFT+"送了一个"+selectedGift.getName();
+                        //获取可用itemview
+                        availableGiftItem = giftView.getAvailableGiftItem();
+                        GiftMsgInfo giftMsgInfo = new GiftMsgInfo();
+                        giftMsgInfo.setGift(selectedGift);
+                        availableGiftItem.bindData(giftMsgInfo);
+                        sendGift();
+                        //给主播发送消息
                         sendTextMsg(text,CustomTimConstant.GIFT_MSG);
 
                     }
@@ -382,27 +388,13 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                     textMsgInfo.setText(newMsg);
                 }
                 if (cmd==CustomTimConstant.GIFT_MSG){
-                    //观众发送礼物
-                    final GiftMsgInfo giftMsgInfo = new GiftMsgInfo();
-                    giftMsgInfo.setGift(mselectedGift);
-                    //设置给礼物的view
-                    giftView.addGift(giftMsgInfo, new GiftView.OnGiftViewAvaliable() {
-                        @Override
-                        public void onAviable(GiftItem giftItem) {
-                            availableDanmuItem= giftItem;
-                            availableDanmuItem.bindData(giftMsgInfo);
-                        }
-                    });
-
-
-
-
-
+                    //准备数据
+                    //通过上边的view开启动画
+                     String newMsg = text.substring(CustomTimConstant.TYPE_GIFT.length(), text.length());
+                     textMsgInfo.setText(text);
                 }
 
                 lmlv.addMsg(textMsgInfo);
-
-
             }
 
             @Override
@@ -441,9 +433,16 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
             danmuMsgInfo.setAdouID(SenderId);
             danmuView.addDanmu(danmuMsgInfo);
 
-        } else {
-            textMsgInfo.setText(msg);
-        }
+        } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT)){
+            //让接收到的消息是动画的话
+            availableGiftItem=giftView.getAvailableGiftItem();
+            sendGift();
+
+
+
+
+        } else{textMsgInfo.setText(msg);}
+
         lmlv.addMsg(textMsgInfo);
     }
 
@@ -462,17 +461,18 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         //在第一次点的时候开始计时
         if (firstSendTimeMillion==0){
             //第一次点击不是连发，设置给giftitem
-            availableDanmuItem.setIsRepeat(false);
+            availableGiftItem.setIsRepeat(false);
             //拿到第一次点的时间
             firstSendTimeMillion=System.currentTimeMillis();
             repeatGiftTimer.sendEmptyMessage(FIRST_GIFT_SEND_FLAG);
             //再执行动画
-            availableDanmuItem.startAnimate();
+            availableGiftItem.setVisibility(View.VISIBLE);
+            availableGiftItem.startAnimate();
         }
         else{//如果属于连击的话,需要把倒计时再从10开始倒数，并且增加礼物数
             //属于连发
-            availableDanmuItem.setIsRepeat(true);
-            availableDanmuItem.repeatSend();//连发操作
+            availableGiftItem.setIsRepeat(true);
+            availableGiftItem.repeatSend();//连发操作
             //清空两个handler的处理
             repeatGiftTimer.removeMessages(FIRST_GIFT_SEND_FLAG);
             repeatGiftTimer.removeMessages(REPEAT_GIFT_SEND_FLAG);

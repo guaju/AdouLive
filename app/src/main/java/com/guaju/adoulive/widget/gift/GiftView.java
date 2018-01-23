@@ -49,26 +49,20 @@ public class GiftView extends LinearLayout {
     }
 
     //提供获得可用弹幕item的方法
-    public GiftItem  getAvailableGiftItem(){
-        //如果第一个弹幕的状态是隐藏状态，那么他就可用
-         if (giftItem0.getVisibility()==View.INVISIBLE){
+    public GiftItem  getAvailableGiftItem()
+    {
+        //判断是否是连发的同一个礼物
               return giftItem0;
-         }
-         else if (giftItem1.getVisibility()==View.INVISIBLE){
-             return giftItem1;
-         }else{
-              return null;
-         }
     }
     //提供 外界添加弹幕的消息
     public void  addGift(GiftMsgInfo info,OnGiftViewAvaliable mOnAvaliable){
         //先拿到可用的弹幕，然后设置info
-        final GiftItem availableDanmuItem = getAvailableGiftItem();
+        final GiftItem availableGiftItem = getAvailableGiftItem();
         //先设置数据
-        if (availableDanmuItem!=null){
+        if (availableGiftItem!=null){
             //TODO 控件可用，执行动画
             if (mOnAvaliable!=null){
-                mOnAvaliable.onAviable(availableDanmuItem);
+                mOnAvaliable.onAviable(availableGiftItem);
             }
 
 

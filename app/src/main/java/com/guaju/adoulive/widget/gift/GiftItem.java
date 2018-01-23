@@ -23,7 +23,10 @@ import com.guaju.adoulive.utils.ImageUtils;
  */
 
 public class GiftItem extends FrameLayout {
-
+    //拿到是否连发的字段
+    public boolean isRepeat() {
+        return isRepeat;
+    }
 
     //发送礼物的数量
     private int sendNum = 0;
@@ -166,6 +169,8 @@ public class GiftItem extends FrameLayout {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     rl_gift_normal.setVisibility(View.INVISIBLE);
+                    //当执行完动画之后把自己隐藏起来
+                    setVisibility(View.INVISIBLE);
                 }
 
                 @Override

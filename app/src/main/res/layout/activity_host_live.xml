@@ -41,6 +41,13 @@
         android:layout_above="@+id/chatswitchlayout"
         />
 
+
+    <com.guaju.adoulive.widget.gift.GiftView
+        android:id="@+id/giftview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/lmlv"
+        />
     <com.guaju.adoulive.widget.danmu.DanmuView
         android:id="@+id/danmuview"
         android:layout_width="match_parent"

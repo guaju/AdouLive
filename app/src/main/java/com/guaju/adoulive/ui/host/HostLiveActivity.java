@@ -3,6 +3,8 @@ package com.guaju.adoulive.ui.host;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -21,6 +23,8 @@ import com.guaju.adoulive.widget.BottomSwitchLayout;
 import com.guaju.adoulive.widget.HeightSensenableRelativeLayout;
 import com.guaju.adoulive.widget.LiveMsgListView;
 import com.guaju.adoulive.widget.danmu.DanmuView;
+import com.guaju.adoulive.widget.gift.GiftItem;
+import com.guaju.adoulive.widget.gift.GiftView;
 import com.tencent.TIMFriendshipManager;
 import com.tencent.TIMMessage;
 import com.tencent.TIMUserProfile;
@@ -42,6 +46,7 @@ import java.util.List;
 public class HostLiveActivity extends Activity implements HostLiveContract.View, ILVLiveConfig.ILVLiveMsgListener {
 
     private AVRootView avRootView;
+    private GiftView giftView;
     private ImageView iv_switch_camera;
     private BottomSwitchLayout bottomswitchlayout;
     private HostPresenter presenter;
@@ -55,6 +60,59 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     private ArrayList<TextMsgInfo> mList = new ArrayList<TextMsgInfo>();
     private DanmuView danmuView;
     private TextMsgInfo textMsgInfo;
+
+
+    private static final int FIRST_GIFT_SEND_FLAG = -1;
+    public static final int REPEAT_GIFT_SEND_FLAG =1 ;
+    //倒计时时间范围
+    private int repeatTimeLimit=10;
+    long firstSendTimeMillion;
+    GiftItem availableGiftItem;
+
+    Handler repeatGiftTimer=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case FIRST_GIFT_SEND_FLAG:
+                    if (repeatTimeLimit>0){
+                        repeatTimeLimit--;//开始倒数
+                        sendEmptyMessageDelayed(FIRST_GIFT_SEND_FLAG,80);
+                    }else{
+                        //倒计时已经数完了，可以重新再开始
+                        availableGiftItem.setIsRepeat(false);
+                        firstSendTimeMillion=0;
+                        repeatTimeLimit=10;
+                    }
+
+                    break;
+
+                case REPEAT_GIFT_SEND_FLAG:
+                    //停止第一个事件 的处理
+                    if (repeatTimeLimit>0){
+                        repeatTimeLimit--;//开始倒数
+                        sendEmptyMessageDelayed(REPEAT_GIFT_SEND_FLAG,80);
+
+                        //用户现在可以连发
+                    }else{
+                        //倒计时已经数完了，可以重新再开始
+                        availableGiftItem.setIsRepeat(false);
+                        availableGiftItem.repeatSendWithoutAddNum();
+                        firstSendTimeMillion=0;
+                        repeatTimeLimit=10;
+                    }
+
+
+                    break;
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
+
+
+
+        }
+    };
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -157,6 +215,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
         //初始化listview
         lmlv = findViewById(R.id.lmlv);
         danmuView = findViewById(R.id.danmuview);
+        giftView = findViewById(R.id.giftview);
         //将avrootview添加
         ILVLiveManager.getInstance().setAvVideoView(avRootView);
     }
@@ -247,7 +306,14 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             danmuMsgInfo.setAdouID(SenderId);
             danmuView.addDanmu(danmuMsgInfo);
 
-        } else {
+        } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT)){
+            //让接收到的消息是动画的话
+            availableGiftItem=giftView.getAvailableGiftItem();
+            sendGift();
+            String newMsg = msg.substring(CustomTimConstant.TYPE_GIFT.length(), msg.length());
+            textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, newMsg, SenderId);
+
+        } else{
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, msg, SenderId);
         }
         lmlv.addMsg(textMsgInfo);
@@ -353,5 +419,31 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             }
         });
     }
+
+    //考虑到联机的发送礼物
+    public void sendGift(){
+        //在第一次点的时候开始计时
+        if (firstSendTimeMillion==0){
+            //第一次点击不是连发，设置给giftitem
+            availableGiftItem.setIsRepeat(false);
+            //拿到第一次点的时间
+            firstSendTimeMillion=System.currentTimeMillis();
+            repeatGiftTimer.sendEmptyMessage(FIRST_GIFT_SEND_FLAG);
+            //再执行动画
+            availableGiftItem.setVisibility(View.VISIBLE);
+            availableGiftItem.startAnimate();
+        }
+        else{//如果属于连击的话,需要把倒计时再从10开始倒数，并且增加礼物数
+            //属于连发
+            availableGiftItem.setIsRepeat(true);
+            availableGiftItem.repeatSend();//连发操作
+            //清空两个handler的处理
+            repeatGiftTimer.removeMessages(FIRST_GIFT_SEND_FLAG);
+            repeatGiftTimer.removeMessages(REPEAT_GIFT_SEND_FLAG);
+            repeatGiftTimer.sendEmptyMessage(REPEAT_GIFT_SEND_FLAG);
+            repeatTimeLimit=10;
+        }
+    }
+
 }
 

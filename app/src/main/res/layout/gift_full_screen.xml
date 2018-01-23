@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="126.6dp"
+        android:background="@mipmap/porche"
+        />
+    <ImageView
+        android:id="@+id/porche_back"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="32dp"
+        android:layout_width="21dp"
+        android:layout_height="42.2dp"
+        android:background="@drawable/anim_gift_full_back"
+        />
+    <ImageView
+        android:id="@+id/porche_front"
+        android:layout_marginLeft="128dp"
+        android:layout_marginTop="64dp"
+        android:layout_width="42.2dp"
+        android:layout_height="55.8dp"
+        android:background="@drawable/anim_gift_full_front"
+        />
+
+
+</FrameLayout>

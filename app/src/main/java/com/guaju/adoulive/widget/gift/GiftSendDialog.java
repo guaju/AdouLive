@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.bean.Gift;
+import com.guaju.adoulive.utils.ToastUtils;
 
 import java.util.ArrayList;
 
@@ -58,6 +59,9 @@ public class GiftSendDialog implements View.OnClickListener {
     private GiftGridView giftGridView0;
     private GiftGridView giftGridView1;
     private GiftViewPageAdapter giftViewPageAdapter;
+
+    private long   preClickTime;
+
 
     //提供接口的实例变量
     private OnGiftSendListener giftSendListener;
@@ -125,10 +129,17 @@ public class GiftSendDialog implements View.OnClickListener {
         bt_send_gift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //让调用者去处理发送按钮的点击事件
-                if (giftSendListener!=null){
-                    giftSendListener.onSend(selectedGift);
+                if (System.currentTimeMillis()-preClickTime>50){
+                    //让调用者去处理发送按钮的点击事件
+                    if (giftSendListener!=null){
+                        giftSendListener.onSend(selectedGift);
+                    }
+                }else{
+                    ToastUtils.show("点击太快了~~~");
                 }
+                preClickTime=System.currentTimeMillis();
+
+
             }
         });
         //准备两个gridview
