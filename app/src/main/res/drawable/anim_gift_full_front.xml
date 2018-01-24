@@ -3,13 +3,13 @@
     <item
         android:drawable="@mipmap/porche_f1"
         android:duration="50" />
- <item
+    <item
         android:drawable="@mipmap/porche_f2"
         android:duration="50" />
- <item
+    <item
         android:drawable="@mipmap/porche_f3"
         android:duration="50" />
- <item
+    <item
         android:drawable="@mipmap/porche_f4"
         android:duration="50" />
 

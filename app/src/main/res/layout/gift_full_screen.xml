@@ -1,8 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
+    <RelativeLayout
+        android:layout_centerHorizontal="true"
+        android:id="@+id/rl_gift_normal"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_gift_bg">
 
+        <ImageView
+            android:id="@+id/iv_sender"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tv_sender_id"
+            android:layout_width="78dp"
+            android:layout_height="25dp"
+            android:layout_alignTop="@+id/iv_sender"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@id/iv_sender"
+            android:maxLines="1"
+            android:text="adouId:"
+            android:textColor="@color/green"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_margin="5dp"
+            android:id="@+id/tv_gift_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_sender_id"
+            android:layout_toRightOf="@id/iv_sender"
+            android:text="送出了礼物"
+            android:textColor="@color/gray"
+            android:textSize="14sp" />
+
+
+    </RelativeLayout>
+
+
+
+    <FrameLayout
+        android:id="@+id/porche"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
     <ImageView
         android:layout_width="300dp"
         android:layout_height="126.6dp"
@@ -24,6 +74,7 @@
         android:layout_height="55.8dp"
         android:background="@drawable/anim_gift_full_front"
         />
+    </FrameLayout>
 
 
-</FrameLayout>
+</RelativeLayout>
