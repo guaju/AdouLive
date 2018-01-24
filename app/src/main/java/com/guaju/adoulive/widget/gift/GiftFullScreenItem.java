@@ -65,7 +65,12 @@ public class GiftFullScreenItem extends FrameLayout {
             @Override
             public void onAnimationEnd(Animation animation) {
                 //此操作等同于创建出一个主线程的handler 然后让handler去发送handler
-                setAnimation(animationstay);
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                      startAnimation(animationout);
+                    }
+                },2000);
 
 
             }
@@ -75,23 +80,23 @@ public class GiftFullScreenItem extends FrameLayout {
 
             }
         });
-        animationstay.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                startAnimation(animationout);
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
+//        animationstay.setAnimationListener(new Animation.AnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                startAnimation(animationout);
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//
+//            }
+//        });
         //最后一个移出动画
         animationout.setAnimationListener(new Animation.AnimationListener() {
             @Override
