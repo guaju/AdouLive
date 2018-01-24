@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.app.AdouApplication;
@@ -24,6 +27,8 @@ import com.guaju.adoulive.widget.BottomSwitchLayout;
 import com.guaju.adoulive.widget.HeightSensenableRelativeLayout;
 import com.guaju.adoulive.widget.LiveMsgListView;
 import com.guaju.adoulive.widget.danmu.DanmuView;
+import com.guaju.adoulive.widget.gift.GiftFullScreenItem;
+import com.guaju.adoulive.widget.gift.GiftFullScreenView;
 import com.guaju.adoulive.widget.gift.GiftItem;
 import com.guaju.adoulive.widget.gift.GiftSendDialog;
 import com.guaju.adoulive.widget.gift.GiftView;
@@ -128,6 +133,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
     private BottomChatSwitchLayout chatswitchlayout;
     private HeightSensenableRelativeLayout hsrl;
     private GiftView giftView;
+    private GiftFullScreenView gift_full_screen_view;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -189,21 +195,35 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
             public void onGift() {
                 //发送按钮的回调
                 GiftSendDialog.OnGiftSendListener onGiftSendListener = new GiftSendDialog.OnGiftSendListener() {
+
+                    private GiftFullScreenItem giftFullScreenAvilableItem;
+
                     @Override
                     public void onSend(Gift selectedGift) {
                         //先得到选中的礼物
                         mselectedGift = selectedGift;
-                        //做发送按钮的处理，发送自定义消息，因为观众需要给主播发消息，让主播看见
-                        //消息内容
-                        String text=CustomTimConstant.TYPE_GIFT+"送了一个"+selectedGift.getName();
-                        //获取可用itemview
-                        availableGiftItem = giftView.getAvailableGiftItem();
                         GiftMsgInfo giftMsgInfo = new GiftMsgInfo();
-                        giftMsgInfo.setGift(selectedGift);
-                        availableGiftItem.bindData(giftMsgInfo);
-                        sendGift();
-                        //给主播发送消息
-                        sendTextMsg(text,CustomTimConstant.GIFT_MSG);
+                        //如果选中的礼物是连续礼物
+                        if (selectedGift.getType()== Gift.GiftType.Repeat){
+                            giftMsgInfo.setGift(selectedGift);
+                            //做发送按钮的处理，发送自定义消息，因为观众需要给主播发消息，让主播看见
+                            //消息内容
+                            String text=CustomTimConstant.TYPE_GIFT_REPEAT+"送了一个"+selectedGift.getName();
+                            availableGiftItem = giftView.getAvailableGiftItem();
+                            availableGiftItem.bindData(giftMsgInfo);
+                            sendGift();
+                            //给主播发送消息
+                            sendTextMsg(text,CustomTimConstant.GIFT_MSG_REPEAT);
+                            //如果选中礼物是全屏礼物
+                        }else if (selectedGift.getType()== Gift.GiftType.FullScreen){
+                            String text=CustomTimConstant.TYPE_GIFT_FULL+"送了一个"+selectedGift.getName();
+                            //展示全屏礼物动画
+                            gift_full_screen_view.showFullScreenGift(giftMsgInfo);
+                            sendTextMsg(text,CustomTimConstant.GIFT_MSG_FULL_SCREEN);
+                        }
+
+
+
 
                     }
                 };
@@ -245,6 +265,13 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
     }
 
     private void initView() {
+
+        gift_full_screen_view = findViewById(R.id.gift_full_screen_view);
+        //先把礼物容器置为隐藏
+        gift_full_screen_view.setVisibility(View.INVISIBLE);
+        //让全屏礼物的容器matchparent
+        FullGiftViewMatchParent();
+
         avRootView = findViewById(R.id.av_rootview);
         bottomswitchlayout = findViewById(R.id.bottomswitchlayout);
         chatswitchlayout = findViewById(R.id.chatswitchlayout);
@@ -253,6 +280,17 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         giftView = findViewById(R.id.giftview);
         hsrl = findViewById(R.id.hsrl);
         lmlv = findViewById(R.id.lmlv);
+    }
+    //把容器的宽高设置成跟屏幕宽高一样，即matchparent
+    private void FullGiftViewMatchParent() {
+        ViewGroup.LayoutParams layoutParams = gift_full_screen_view.getLayoutParams();
+        WindowManager wm=getWindowManager();
+        Display defaultDisplay = wm.getDefaultDisplay();
+        int width = defaultDisplay.getWidth();
+        int height = defaultDisplay.getHeight();
+        layoutParams.width=width;
+        layoutParams.height=height;
+        gift_full_screen_view.setLayoutParams(layoutParams);
     }
 
     @Override
@@ -387,11 +425,15 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                     danmuView.addDanmu(danmuMsgInfo);
                     textMsgInfo.setText(newMsg);
                 }
-                if (cmd==CustomTimConstant.GIFT_MSG){
+                if (cmd==CustomTimConstant.GIFT_MSG_REPEAT){
                     //准备数据
                     //通过上边的view开启动画
-                     String newMsg = text.substring(CustomTimConstant.TYPE_GIFT.length(), text.length());
+                     String newMsg = text.substring(CustomTimConstant.TYPE_GIFT_REPEAT.length(), text.length());
                      textMsgInfo.setText(text);
+                }
+                if (cmd==CustomTimConstant.GIFT_MSG_FULL_SCREEN){
+                    String newMsg = text.substring(CustomTimConstant.TYPE_GIFT_FULL.length(), text.length());
+                    textMsgInfo.setText(text);
                 }
 
                 lmlv.addMsg(textMsgInfo);
@@ -411,6 +453,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
         String msg=text.getText();
         String nickName = userProfile.getNickName();
         String grade;
+        String avatar=userProfile.getFaceUrl();
         byte[] bytes = userProfile.getCustomInfo().get(CustomTimConstant.INFO_GRADE);
         if (bytes!=null){
             grade = new String(bytes);
@@ -425,7 +468,6 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
             String newMsg = msg.substring(CustomTimConstant.TYPE_DAN.length(), msg.length());
             textMsgInfo.setText(newMsg);
             //发送弹幕
-            String avatar=userProfile.getFaceUrl();
             DanmuMsgInfo danmuMsgInfo = new DanmuMsgInfo();
             danmuMsgInfo.setText(newMsg);
             danmuMsgInfo.setGrade(Integer.parseInt(grade));
@@ -433,15 +475,21 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
             danmuMsgInfo.setAdouID(SenderId);
             danmuView.addDanmu(danmuMsgInfo);
 
-        } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT)){
+        } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT_REPEAT)){
             //让接收到的消息是动画的话
             availableGiftItem=giftView.getAvailableGiftItem();
             sendGift();
 
+        }else if (msg.startsWith(CustomTimConstant.TYPE_GIFT_FULL)){
+            //接受到了全屏礼物
+            GiftMsgInfo giftMsgInfo = new GiftMsgInfo();
+            giftMsgInfo.setAvatar(avatar);
+            giftMsgInfo.setAdouID(SenderId);
+            gift_full_screen_view.showFullScreenGift(giftMsgInfo);
+        }
 
 
-
-        } else{textMsgInfo.setText(msg);}
+        else{textMsgInfo.setText(msg);}
 
         lmlv.addMsg(textMsgInfo);
     }
@@ -456,7 +504,7 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
 
     }
 
-    //考虑到联机的发送礼物
+    //考虑到连续的发送礼物
     public void sendGift(){
         //在第一次点的时候开始计时
         if (firstSendTimeMillion==0){

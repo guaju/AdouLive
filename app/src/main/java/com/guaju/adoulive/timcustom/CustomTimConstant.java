@@ -13,7 +13,8 @@ public interface CustomTimConstant {
     //校验是普通信息还是弹幕
     String TYPE_MSG="M-+s=+-G";
     String TYPE_DAN="D-+a=+-N";
-    String TYPE_GIFT="G-+if=+-T";
+    String TYPE_GIFT_REPEAT="G-+if=+-T-repeat";
+    String TYPE_GIFT_FULL="G-+if=+-T-full";
 
 
     //前缀必须是这个
@@ -41,5 +42,7 @@ public interface CustomTimConstant {
 
     int TEXT_MSG = 0x801;
     int DANMU_MSG=0x802;
-    int GIFT_MSG=0x803;
+    int GIFT_MSG_REPEAT =0x803;
+    int GIFT_MSG_FULL_SCREEN =0x804;
+
 }

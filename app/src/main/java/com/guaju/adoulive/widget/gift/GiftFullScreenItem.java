@@ -18,7 +18,7 @@ import com.guaju.adoulive.R;
  * Created by guaju on 2018/1/23.
  */
 
-public class GiftFullScreenItem extends FrameLayout{
+public class GiftFullScreenItem extends FrameLayout {
 
     private LayoutInflater inflater;
     private ImageView porche_back;
@@ -31,6 +31,7 @@ public class GiftFullScreenItem extends FrameLayout{
     private Animation animationstay;
     private Animation animationout;
 
+
     public GiftFullScreenItem(@NonNull Context context) {
         super(context);
         init();
@@ -39,38 +40,32 @@ public class GiftFullScreenItem extends FrameLayout{
     private void init() {
         inflater = LayoutInflater.from(getContext());
         View v = inflater.inflate(R.layout.gift_full_screen, this, true);
-        porche = v.findViewById(R.id.porche);
+
         porche_back = v.findViewById(R.id.porche_back);
         porche_front = v.findViewById(R.id.porche_front);
         porche_back_anim = (AnimationDrawable) porche_back.getBackground();
         porche_back_front = (AnimationDrawable) porche_front.getBackground();
         porche_back_anim.start();
         porche_back_front.start();
-        initAnimation(porche);
+        initAnimation();
 
 
     }
 
-    private void initAnimation(final View target) {
+    private void initAnimation() {
         animationin = AnimationUtils.loadAnimation(getContext(), R.anim.gift_full_screen_in);
         animationstay = AnimationUtils.loadAnimation(getContext(), R.anim.gift_full_screen_stay);
         animationout = AnimationUtils.loadAnimation(getContext(), R.anim.gift_full_screen_out);
         animationin.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                target.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
                 //此操作等同于创建出一个主线程的handler 然后让handler去发送handler
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        target.setAnimation(animationstay);
-
-                    }
-                });
+                setAnimation(animationstay);
 
 
             }
@@ -88,12 +83,8 @@ public class GiftFullScreenItem extends FrameLayout{
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        target.setAnimation(animationout);
-                    }
-                });
+                startAnimation(animationout);
+
             }
 
             @Override
@@ -101,6 +92,7 @@ public class GiftFullScreenItem extends FrameLayout{
 
             }
         });
+        //最后一个移出动画
         animationout.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -109,7 +101,11 @@ public class GiftFullScreenItem extends FrameLayout{
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                target.setVisibility(View.INVISIBLE);
+                setVisibility(View.INVISIBLE);
+
+                //从消息缓存队列中去取消息，由于消息属于GiftFullScreenView持有，所以现在需要回调
+                mOnCompleted.onCompleted();
+
             }
 
             @Override
@@ -124,15 +120,25 @@ public class GiftFullScreenItem extends FrameLayout{
         init();
     }
 
-    public  void cancleDrawableAnim(){
+    public void cancleDrawableAnim() {
         porche_back_anim.stop();
         porche_back_front.stop();
     }
 
     //保时捷跑起来
-    public  void  porcheGo(){
+    public void porcheGo() {
+        startAnimation(animationin);
+    }
 
-        porche.setAnimation(animationin);
-        animationin.start();
+
+    OnGiftAnimationCompleted mOnCompleted;
+
+    public void setOnGiftAnimationCommpleted(OnGiftAnimationCompleted oo) {
+        mOnCompleted = oo;
+    }
+
+    public interface OnGiftAnimationCompleted {
+        //当当前动画执行完后，去加载缓存数据
+        void onCompleted();
     }
 }

@@ -14,6 +14,9 @@ public class Gift {
     int resId;
     String name;
     int price;
+    GiftType type;
+    boolean isSelected;
+
 
     public Gift(int giftId, int resId, String name, int price, GiftType type, boolean isSelected) {
         this.giftId = giftId;
@@ -24,8 +27,7 @@ public class Gift {
         this.isSelected = isSelected;
     }
 
-    GiftType type;
-    boolean isSelected;
+
 
     public int getResId() {
         return resId;
@@ -69,7 +71,7 @@ public class Gift {
     }
 
 
-    enum GiftType {
+    public enum GiftType {
         //连发，全屏礼物
         Repeat, FullScreen, Empty;
     }

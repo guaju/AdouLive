@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.app.AdouApplication;
 import com.guaju.adoulive.bean.DanmuMsgInfo;
+import com.guaju.adoulive.bean.GiftMsgInfo;
 import com.guaju.adoulive.bean.TextMsgInfo;
 import com.guaju.adoulive.engine.MessageObservable;
 import com.guaju.adoulive.timcustom.CustomTimConstant;
@@ -23,6 +24,7 @@ import com.guaju.adoulive.widget.BottomSwitchLayout;
 import com.guaju.adoulive.widget.HeightSensenableRelativeLayout;
 import com.guaju.adoulive.widget.LiveMsgListView;
 import com.guaju.adoulive.widget.danmu.DanmuView;
+import com.guaju.adoulive.widget.gift.GiftFullScreenView;
 import com.guaju.adoulive.widget.gift.GiftItem;
 import com.guaju.adoulive.widget.gift.GiftView;
 import com.tencent.TIMFriendshipManager;
@@ -63,42 +65,42 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
 
 
     private static final int FIRST_GIFT_SEND_FLAG = -1;
-    public static final int REPEAT_GIFT_SEND_FLAG =1 ;
+    public static final int REPEAT_GIFT_SEND_FLAG = 1;
     //倒计时时间范围
-    private int repeatTimeLimit=10;
+    private int repeatTimeLimit = 10;
     long firstSendTimeMillion;
     GiftItem availableGiftItem;
 
-    Handler repeatGiftTimer=new Handler(){
+    Handler repeatGiftTimer = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case FIRST_GIFT_SEND_FLAG:
-                    if (repeatTimeLimit>0){
+                    if (repeatTimeLimit > 0) {
                         repeatTimeLimit--;//开始倒数
-                        sendEmptyMessageDelayed(FIRST_GIFT_SEND_FLAG,80);
-                    }else{
+                        sendEmptyMessageDelayed(FIRST_GIFT_SEND_FLAG, 80);
+                    } else {
                         //倒计时已经数完了，可以重新再开始
                         availableGiftItem.setIsRepeat(false);
-                        firstSendTimeMillion=0;
-                        repeatTimeLimit=10;
+                        firstSendTimeMillion = 0;
+                        repeatTimeLimit = 10;
                     }
 
                     break;
 
                 case REPEAT_GIFT_SEND_FLAG:
                     //停止第一个事件 的处理
-                    if (repeatTimeLimit>0){
+                    if (repeatTimeLimit > 0) {
                         repeatTimeLimit--;//开始倒数
-                        sendEmptyMessageDelayed(REPEAT_GIFT_SEND_FLAG,80);
+                        sendEmptyMessageDelayed(REPEAT_GIFT_SEND_FLAG, 80);
 
                         //用户现在可以连发
-                    }else{
+                    } else {
                         //倒计时已经数完了，可以重新再开始
                         availableGiftItem.setIsRepeat(false);
                         availableGiftItem.repeatSendWithoutAddNum();
-                        firstSendTimeMillion=0;
-                        repeatTimeLimit=10;
+                        firstSendTimeMillion = 0;
+                        repeatTimeLimit = 10;
                     }
 
 
@@ -109,9 +111,9 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             }
 
 
-
         }
     };
+    private GiftFullScreenView gift_full_screen_view;
 
 
     @Override
@@ -206,6 +208,8 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     }
 
     private void initView() {
+
+        gift_full_screen_view = findViewById(R.id.gift_full_screen_view);
         heightscl = findViewById(R.id.heightscl);
         toolbar = findViewById(R.id.toolbar);
         avRootView = findViewById(R.id.arv_root);
@@ -284,6 +288,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
         sendserId = SenderId;
         String msg = text.getText();
         String nickName = userProfile.getNickName();
+        String avatar = userProfile.getFaceUrl();
         String grade;
         byte[] bytes = userProfile.getCustomInfo().get(CustomTimConstant.INFO_GRADE);
         if (bytes != null) {
@@ -298,7 +303,6 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             String newMsg = msg.substring(CustomTimConstant.TYPE_DAN.length(), msg.length());
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, newMsg, SenderId);
             //发送弹幕
-            String avatar = userProfile.getFaceUrl();
             DanmuMsgInfo danmuMsgInfo = new DanmuMsgInfo();
             danmuMsgInfo.setText(newMsg);
             danmuMsgInfo.setGrade(Integer.parseInt(grade));
@@ -306,14 +310,20 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             danmuMsgInfo.setAdouID(SenderId);
             danmuView.addDanmu(danmuMsgInfo);
 
-        } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT)){
+        } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT_REPEAT)) {
             //让接收到的消息是动画的话
-            availableGiftItem=giftView.getAvailableGiftItem();
+            availableGiftItem = giftView.getAvailableGiftItem();
             sendGift();
-            String newMsg = msg.substring(CustomTimConstant.TYPE_GIFT.length(), msg.length());
+            String newMsg = msg.substring(CustomTimConstant.TYPE_GIFT_REPEAT.length(), msg.length());
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, newMsg, SenderId);
 
-        } else{
+        } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT_FULL)) {
+            //接受到了全屏礼物
+            GiftMsgInfo giftMsgInfo = new GiftMsgInfo();
+            giftMsgInfo.setAvatar(avatar);
+            giftMsgInfo.setAdouID(SenderId);
+            gift_full_screen_view.showFullScreenGift(giftMsgInfo);
+        } else {
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, msg, SenderId);
         }
         lmlv.addMsg(textMsgInfo);
@@ -421,19 +431,18 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     }
 
     //考虑到联机的发送礼物
-    public void sendGift(){
+    public void sendGift() {
         //在第一次点的时候开始计时
-        if (firstSendTimeMillion==0){
+        if (firstSendTimeMillion == 0) {
             //第一次点击不是连发，设置给giftitem
             availableGiftItem.setIsRepeat(false);
             //拿到第一次点的时间
-            firstSendTimeMillion=System.currentTimeMillis();
+            firstSendTimeMillion = System.currentTimeMillis();
             repeatGiftTimer.sendEmptyMessage(FIRST_GIFT_SEND_FLAG);
             //再执行动画
             availableGiftItem.setVisibility(View.VISIBLE);
             availableGiftItem.startAnimate();
-        }
-        else{//如果属于连击的话,需要把倒计时再从10开始倒数，并且增加礼物数
+        } else {//如果属于连击的话,需要把倒计时再从10开始倒数，并且增加礼物数
             //属于连发
             availableGiftItem.setIsRepeat(true);
             availableGiftItem.repeatSend();//连发操作
@@ -441,7 +450,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             repeatGiftTimer.removeMessages(FIRST_GIFT_SEND_FLAG);
             repeatGiftTimer.removeMessages(REPEAT_GIFT_SEND_FLAG);
             repeatGiftTimer.sendEmptyMessage(REPEAT_GIFT_SEND_FLAG);
-            repeatTimeLimit=10;
+            repeatTimeLimit = 10;
         }
     }
 
