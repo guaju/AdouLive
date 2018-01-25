@@ -1,13 +1,19 @@
 package com.guaju.adoulive;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.animation.Animation;
 
-import com.guaju.adoulive.bean.Gift;
 import com.guaju.adoulive.widget.gift.GiftFullScreenItem;
 import com.guaju.adoulive.widget.gift.GiftFullScreenView;
+
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import tyrantgit.widget.HeartLayout;
 
 /**
  * Created by guaju on 2018/1/16.
@@ -21,37 +27,37 @@ public class FullScreenGiftTest extends Activity {
     private Animation animationstay;
     private Animation animationin;
     private GiftFullScreenView giftfullscreen1;
+    private HeartLayout heartLayout;
+    Random random = new Random();
+    Timer timer = new Timer();
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.test1);
-        Gift gift = Gift.getGiftByName("卷纸");
-//        giftfullscreen1 = findViewById(R.id.giftfullscreen);
-//        ViewGroup.LayoutParams layoutParams = giftfullscreen1.getLayoutParams();
-//
-//        WindowManager wm=getWindowManager();
-//        Display defaultDisplay = wm.getDefaultDisplay();
-//        int width = defaultDisplay.getWidth();
-//        int height = defaultDisplay.getHeight();
-//        layoutParams.width=width;
-//        layoutParams.height=height;
-//        giftfullscreen1.setLayoutParams(layoutParams);
-//        GiftSendDialog giftSendDialog = new GiftSendDialog(this, R.style.custom_dialog, new GiftSendDialog.OnGiftSendListener() {
-//            @Override
-//            public void onSend(Gift selectedGift) {
-//                if (selectedGift.getType() == Gift.GiftType.FullScreen) {
-//
-//                    Logger.e("点击了发送按钮");
-//                    String text = CustomTimConstant.TYPE_GIFT_FULL + "送了一个" + selectedGift.getName();
-//                    //展示全屏礼物动画
-//                    GiftMsgInfo giftMsgInfo = new GiftMsgInfo();
-//
-//                    giftfullscreen1.showFullScreenGift(giftMsgInfo);
-//                }
-//            }
-//        });
-//        giftSendDialog.show();
+        heartLayout = findViewById(R.id.hearlayout);
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                heartLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        heartLayout.addHeart(generateColor(),R.drawable.content,R.drawable.border);
+
+                    }
+                });
+            }
+        }, 0, 1000);
+
+
     }
+
+    private int generateColor() {
+        int rgb = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+        return rgb;
+    }
+
+
 }

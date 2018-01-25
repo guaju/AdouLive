@@ -60,5 +60,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+    <tyrantgit.widget.HeartLayout
+        android:id="@+id/heartlayout"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        ></tyrantgit.widget.HeartLayout>
 
 </com.guaju.adoulive.widget.HeightSensenableRelativeLayout>

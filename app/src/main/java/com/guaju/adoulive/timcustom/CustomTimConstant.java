@@ -15,6 +15,7 @@ public interface CustomTimConstant {
     String TYPE_DAN="D-+a=+-N";
     String TYPE_GIFT_REPEAT="G-+if=+-T-repeat";
     String TYPE_GIFT_FULL="G-+if=+-T-full";
+    String TYPE_Heart="H-+ear=+-T";
 
 
     //前缀必须是这个
@@ -44,5 +45,6 @@ public interface CustomTimConstant {
     int DANMU_MSG=0x802;
     int GIFT_MSG_REPEAT =0x803;
     int GIFT_MSG_FULL_SCREEN =0x804;
+    int HEART_MSG =0x805;
 
 }

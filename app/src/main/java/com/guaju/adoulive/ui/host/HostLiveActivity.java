@@ -2,6 +2,7 @@ package com.guaju.adoulive.ui.host;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -42,6 +43,11 @@ import com.tencent.livesdk.ILVText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import tyrantgit.widget.HeartLayout;
 
 /**
  * Created by guaju on 2018/1/8.
@@ -49,6 +55,11 @@ import java.util.List;
 
 public class HostLiveActivity extends Activity implements HostLiveContract.View, ILVLiveConfig.ILVLiveMsgListener {
 
+
+    //心形定时器
+    Timer heartTimer = new Timer();
+    //产生心形颜色的随机器
+    Random heartColorRandom = new Random();
     private AVRootView avRootView;
     private GiftView giftView;
     private ImageView iv_switch_camera;
@@ -116,6 +127,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
         }
     };
     private GiftFullScreenView gift_full_screen_view;
+    private HeartLayout heartLayout;
 
 
     @Override
@@ -134,6 +146,8 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
         initListener();
         initPresenter();
         initCreateHost();
+
+        startHeartAnim();
 
 
     }
@@ -210,7 +224,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     }
 
     private void initView() {
-
+        heartLayout = findViewById(R.id.heartlayout);
         gift_full_screen_view = findViewById(R.id.gift_full_screen_view);
         gift_full_screen_view.setVisibility(View.INVISIBLE);
         heightscl = findViewById(R.id.heightscl);
@@ -325,15 +339,15 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             String newMsg = msg.substring(CustomTimConstant.TYPE_GIFT_REPEAT.length(), msg.length());
             //获取消息中的礼物信息
             String giftname = newMsg.replace("送了一个", "");
-            Gift gift=Gift.getGiftByName(giftname);
+            Gift gift = Gift.getGiftByName(giftname);
 
             giftMsgInfo.setGift(gift);
 
 
-            Logger.e(giftname+"--"+gift);
+            Logger.e(giftname + "--" + gift);
             //给连发礼物消息绑定数据
             availableGiftItem.bindData(giftMsgInfo);
-            
+
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, newMsg, SenderId);
 
         } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT_FULL)) {
@@ -343,6 +357,10 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             giftMsgInfo.setAdouID(SenderId);
             gift_full_screen_view.showFullScreenGift(giftMsgInfo);
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, "送出了一辆保时捷超跑", SenderId);
+        } else if (msg.startsWith(CustomTimConstant.TYPE_Heart)) {
+            msg = "点亮了一颗心";
+            textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, msg, SenderId);
+            addHeart();
         } else {
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, msg, SenderId);
         }
@@ -350,6 +368,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
 
 
     }
+
 
     //是自定义消息（可以用作弹幕）
     @Override
@@ -472,6 +491,34 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             repeatGiftTimer.sendEmptyMessage(REPEAT_GIFT_SEND_FLAG);
             repeatTimeLimit = 10;
         }
+    }
+
+    private void addHeart() {
+        //添加一一颗心
+        heartLayout.addHeart(generateColor());
+    }
+
+    private int generateColor() {
+        int rgb = Color.rgb(heartColorRandom.nextInt(255), heartColorRandom.nextInt(255), heartColorRandom.nextInt(255));
+        return rgb;
+    }
+
+    //开始心形动画,在零秒之后每隔一秒自动冒心
+    private void startHeartAnim() {
+        heartTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                heartLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        heartLayout.addHeart(generateColor());
+                    }
+                });
+
+            }
+        }, 0, 1000);
+
     }
 
 }

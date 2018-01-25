@@ -29,6 +29,13 @@
         android:layout_height="150dp"
         android:layout_above="@id/bottomswitchlayout"
         />
+    <tyrantgit.widget.HeartLayout
+        android:id="@+id/heartlayout"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        ></tyrantgit.widget.HeartLayout>
 
     <com.guaju.adoulive.widget.danmu.DanmuView
         android:id="@+id/danmuview"

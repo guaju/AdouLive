@@ -41,5 +41,6 @@ dependencies {
     //4、7牛图片存储框架 （7牛需要添加okhttp辅助）
     compile 'com.qiniu:qiniu-android-sdk:7.3.10'
     compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'tyrant:heartlayout:1.0.1'
     implementation 'com.android.support:recyclerview-v7:26.0.0-beta1'
 }

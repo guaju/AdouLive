@@ -4,12 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.guaju.adoulive.widget.gift.GiftFullScreenView
-        android:layout_centerInParent="true"
-        android:id="@+id/giftfullscreen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+   <tyrantgit.widget.HeartLayout
+       android:id="@+id/hearlayout"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"/>
 
 
 </RelativeLayout>
