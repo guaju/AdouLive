@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.guaju.adoulive.R;
 import com.guaju.adoulive.app.AdouApplication;
 import com.guaju.adoulive.bean.DanmuMsgInfo;
+import com.guaju.adoulive.bean.Gift;
 import com.guaju.adoulive.bean.GiftMsgInfo;
 import com.guaju.adoulive.bean.TextMsgInfo;
 import com.guaju.adoulive.engine.MessageObservable;
@@ -27,6 +28,7 @@ import com.guaju.adoulive.widget.danmu.DanmuView;
 import com.guaju.adoulive.widget.gift.GiftFullScreenView;
 import com.guaju.adoulive.widget.gift.GiftItem;
 import com.guaju.adoulive.widget.gift.GiftView;
+import com.orhanobut.logger.Logger;
 import com.tencent.TIMFriendshipManager;
 import com.tencent.TIMMessage;
 import com.tencent.TIMUserProfile;
@@ -210,6 +212,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
     private void initView() {
 
         gift_full_screen_view = findViewById(R.id.gift_full_screen_view);
+        gift_full_screen_view.setVisibility(View.INVISIBLE);
         heightscl = findViewById(R.id.heightscl);
         toolbar = findViewById(R.id.toolbar);
         avRootView = findViewById(R.id.arv_root);
@@ -314,7 +317,23 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             //让接收到的消息是动画的话
             availableGiftItem = giftView.getAvailableGiftItem();
             sendGift();
+            //设置礼物的信息
+            GiftMsgInfo giftMsgInfo = new GiftMsgInfo();
+            giftMsgInfo.setAvatar(avatar);
+            giftMsgInfo.setAdouID(SenderId);
+            //通过消息本体，拿到到底是哪个礼物
             String newMsg = msg.substring(CustomTimConstant.TYPE_GIFT_REPEAT.length(), msg.length());
+            //获取消息中的礼物信息
+            String giftname = newMsg.replace("送了一个", "");
+            Gift gift=Gift.getGiftByName(giftname);
+
+            giftMsgInfo.setGift(gift);
+
+
+            Logger.e(giftname+"--"+gift);
+            //给连发礼物消息绑定数据
+            availableGiftItem.bindData(giftMsgInfo);
+            
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, newMsg, SenderId);
 
         } else if (msg.startsWith(CustomTimConstant.TYPE_GIFT_FULL)) {
@@ -323,6 +342,7 @@ public class HostLiveActivity extends Activity implements HostLiveContract.View,
             giftMsgInfo.setAvatar(avatar);
             giftMsgInfo.setAdouID(SenderId);
             gift_full_screen_view.showFullScreenGift(giftMsgInfo);
+            textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, "送出了一辆保时捷超跑", SenderId);
         } else {
             textMsgInfo = new TextMsgInfo(Integer.parseInt(grade), nickName, msg, SenderId);
         }

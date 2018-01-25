@@ -9,8 +9,9 @@ import java.util.ArrayList;
  */
 
 public class Gift {
+
     int  giftId;
-    static ArrayList<Gift> allGifts = new ArrayList<>();
+    public static ArrayList<Gift> allGifts = new ArrayList<>();
     int resId;
     String name;
     int price;
@@ -27,7 +28,15 @@ public class Gift {
         this.isSelected = isSelected;
     }
 
-
+    public static Gift getGiftByName(String giftName){
+        Gift gift=null;
+        for (Gift g:allGifts){
+            if (giftName.equals(g.getName())){
+                   gift=g;
+            }
+        }
+        return gift;
+    }
 
     public int getResId() {
         return resId;
@@ -102,13 +111,12 @@ public class Gift {
 
     //让所有设置不选中
     public static void setUnSelected() {
-       initAllGift();
        for (Gift g:allGifts){
            g.setSelected(false);
        }
     }
-
-    private static void initAllGift() {
+     //改成静态代码块，他会在静态变量初始化之后直接调用
+     static  {
         allGifts.add(Gift.gift0);
         allGifts.add(Gift.gift1);
         allGifts.add(Gift.gift2);

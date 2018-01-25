@@ -429,11 +429,11 @@ public class WatchLiveActivity extends Activity implements ILVLiveConfig.ILVLive
                     //准备数据
                     //通过上边的view开启动画
                      String newMsg = text.substring(CustomTimConstant.TYPE_GIFT_REPEAT.length(), text.length());
-                     textMsgInfo.setText(text);
+                     textMsgInfo.setText(newMsg);
                 }
                 if (cmd==CustomTimConstant.GIFT_MSG_FULL_SCREEN){
                     String newMsg = text.substring(CustomTimConstant.TYPE_GIFT_FULL.length(), text.length());
-                    textMsgInfo.setText(text);
+                    textMsgInfo.setText(newMsg);
                 }
 
                 lmlv.addMsg(textMsgInfo);

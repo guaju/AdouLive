@@ -44,7 +44,7 @@ public class AdouApplication extends Application {
                 .showThreadInfo(false)  // (Optional) Whether to show thread info or not. Default true
                 .methodCount(0)         // (Optional) How many method line to show. Default 2
                 .methodOffset(7)        // (Optional) Hides internal method calls up to offset. Default 5
-                .tag("GUAJU")   // (Optional) Global tag for every log. Default PRETTY_LOGGER
+                .tag("GUAJUJERRY")   // (Optional) Global tag for every log. Default PRETTY_LOGGER
                 .build();
 
         Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy));

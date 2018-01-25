@@ -68,12 +68,15 @@ public class GiftFullScreenView extends FrameLayout{
         item.setOnGiftAnimationCommpleted(new GiftFullScreenItem.OnGiftAnimationCompleted() {
             @Override
             public void onCompleted() {
+                //把自己设置为隐藏
                 setVisibility(View.INVISIBLE);
                 //取消息，展示
                 if (!msgs.isEmpty()){
+
                 GiftMsgInfo giftMsgInfo = msgs.removeFirst();
                 //礼物item可用
                 bindData(giftMsgInfo);
+                setVisibility(View.VISIBLE);
                 //开始动画
                 item.porcheGo();
                 }
